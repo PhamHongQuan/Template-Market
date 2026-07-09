@@ -10,9 +10,9 @@ class AuthService
 {
     public function __construct(protected UserRepository $userRepository) {}
 
-    public function login(array $credentials)
+    public function login(array $data)
     {
-        if (! $token = JWTAuth::attempt($credentials)) {
+        if (! $token = JWTAuth::attempt($data)) {
             throw ValidationException::withMessages([
                 'email' => ['Email or password is incorrect.'],
             ]);
@@ -22,6 +22,19 @@ class AuthService
             'access_token' => $token,
             'token_type' => 'Bearer',
             'user' => JWTAuth::user(),
+        ];
+    }
+
+    public function register(array $data)
+    {
+        $user = $this->userRepository->create($data);
+
+        $token = JWTAuth::fromUser($user);
+
+        return [
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user,
         ];
     }
 }

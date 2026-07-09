@@ -10,4 +10,9 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::where('email', $email)->first();
     }
+
+    public function create(array $data): User
+    {
+        return User::create($data);
+    }
 }
