@@ -33,4 +33,15 @@ class AuthController extends Controller
             201
         );
     }
+
+    public function logout()
+    {
+        $this->authService->logout();
+
+        return ApiResponse::success(
+            null,
+            'Logout successful.',
+            200
+        );
+    }
 }

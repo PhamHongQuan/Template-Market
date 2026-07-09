@@ -37,4 +37,9 @@ class AuthService
             'user' => $user,
         ];
     }
+
+    public function logout()
+    {
+        JWTAuth::invalidate(JWTAuth::getToken());
+    }
 }
