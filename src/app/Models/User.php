@@ -8,8 +8,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable([
+    'name',
+    'email',
+    'password',
+    'phone',
+    'avatar',
+    'bio',
+    'role',
+    'status',
+    'last_login_at',
+])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements JWTSubject
 {
@@ -19,7 +31,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_login_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
+            'status' => UserStatus::class,
         ];
     }
 
