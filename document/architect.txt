@@ -1,0 +1,28 @@
+app
+├── Http
+│   ├── Controllers
+│   │   └── Api
+│   │       └── Auth
+│   │           └── LoginController.php
+│   │
+│   ├── Requests
+│   │   └── Auth
+│   │       └── LoginRequest.php
+│   │
+│   └── Resources
+│       └── UserResource.php
+│
+├── Services
+│   └── AuthService.php
+│
+├── Repositories
+│   ├── Contracts
+│   │   └── UserRepositoryInterface.php
+│   │
+│   └── UserRepository.php
+│
+├── Models
+│   └── User.php
+│
+└── Providers
+    └── RepositoryServiceProvider.php
