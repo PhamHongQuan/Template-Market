@@ -1,0 +1,74 @@
+frontend/
+│
+├── app/                         # App Router
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── globals.css
+│   │
+│   ├── login/
+│   │   └── page.tsx
+│   │
+│   ├── register/
+│   │   └── page.tsx
+│   │
+│   ├── templates/
+│   │   ├── page.tsx
+│   │   └── [slug]/
+│   │       └── page.tsx
+│   │
+│   └── profile/
+│       └── page.tsx
+│
+├── components/
+│   ├── layout/
+│   │   ├── Navbar.tsx
+│   │   ├── Footer.tsx
+│   │   └── Sidebar.tsx
+│   │
+│   ├── common/
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   ├── Modal.tsx
+│   │   └── Loading.tsx
+│   │
+│   ├── cards/
+│   │   ├── TemplateCard.tsx
+│   │   └── CategoryCard.tsx
+│   │
+│   └── ui/
+│       ├── Badge.tsx
+│       ├── Avatar.tsx
+│       └── Dropdown.tsx
+│
+├── services/
+│   ├── axios.ts
+│   ├── auth.service.ts
+│   ├── template.service.ts
+│   └── user.service.ts
+│
+├── hooks/
+│   ├── useAuth.ts
+│   ├── useDebounce.ts
+│   └── useTemplate.ts
+│
+├── lib/
+│   ├── constants.ts
+│   ├── helpers.ts
+│   └── storage.ts
+│
+├── types/
+│   ├── auth.ts
+│   ├── template.ts
+│   └── user.ts
+│
+├── public/
+│   ├── images/
+│   ├── icons/
+│   └── logo.svg
+│
+├── styles/
+│   └── variables.css
+│
+├── .env.local
+├── next.config.ts
+└── package.json

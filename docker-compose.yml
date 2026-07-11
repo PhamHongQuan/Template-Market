@@ -1,20 +1,31 @@
 services:
 
-  frontend:
-    image: node:22-alpine
+  # frontend:
+  #   image: node:22-alpine
+  #   container_name: frontend
 
-    container_name: frontend
+  #   working_dir: /app
 
-    working_dir: /app
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
 
-    volumes:
-      - ./frontend:/app
+  #   ports:
+  #     - "3000:3000"
 
-    ports:
-      - "3000:3000"
+  #   environment:
+  #     NODE_ENV: development
 
-    command: tail -f /dev/null
-    
+  #     # Polling
+  #     CHOKIDAR_USEPOLLING: "true"
+  #     CHOKIDAR_INTERVAL: "500"
+  #     WATCHPACK_POLLING: "true"
+
+  #   command: >
+  #     sh -c "
+  #       npm install &&
+  #       npm run dev -- --hostname 0.0.0.0 --webpack
+  #     "
 
   nginx:
     image: nginx:latest

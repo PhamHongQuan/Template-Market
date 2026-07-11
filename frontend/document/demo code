@@ -451,7 +451,108 @@ export default function Home() {
   }, [cart]);
 
   return (
-    <div className="">
+    <div className="min-h-screen bg-base-100 text-base-content flex flex-col font-sans transition-colors duration-200">
+      
+      {/* 1. STICKY HEADER / NAVBAR */}
+      <header className="sticky top-0 z-40 w-full border-b border-base-200/80 bg-base-100/90 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          
+          {/* Logo */}
+          <div className="flex items-center gap-3 text-base-content">
+            <div className="h-9 w-9 bg-neutral text-neutral-content rounded-lg flex items-center justify-center font-bold tracking-wider">
+              DC
+            </div>
+            <div>
+              <span className="font-semibold text-lg tracking-tight">DevCraft</span>
+              <span className="hidden sm:inline text-xs text-base-content/60 font-mono ml-2">/ templates</span>
+            </div>
+          </div>
+
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-base-content/75">
+            <button 
+              onClick={() => { setSelectedCategory("All"); setSearchQuery(""); }} 
+              className={`hover:text-base-content transition-colors cursor-pointer ${selectedCategory === "All" ? "text-base-content font-semibold" : ""}`}
+            >
+              Browse
+            </button>
+            <button 
+              onClick={() => { setSelectedCategory("SaaS"); setSearchQuery(""); }} 
+              className={`hover:text-base-content transition-colors cursor-pointer ${selectedCategory === "SaaS" ? "text-base-content font-semibold" : ""}`}
+            >
+              SaaS
+            </button>
+            <button 
+              onClick={() => { setSelectedCategory("Dashboard"); setSearchQuery(""); }} 
+              className={`hover:text-base-content transition-colors cursor-pointer ${selectedCategory === "Dashboard" ? "text-base-content font-semibold" : ""}`}
+            >
+              Dashboards
+            </button>
+            <button 
+              onClick={() => { setSelectedCategory("Docs"); setSearchQuery(""); }} 
+              className={`hover:text-base-content transition-colors cursor-pointer ${selectedCategory === "Docs" ? "text-base-content font-semibold" : ""}`}
+            >
+              Docs
+            </button>
+          </nav>
+
+          {/* Action controls */}
+          <div className="flex items-center gap-3">
+            
+            {/* Search Toggle (Desktop only shortcut label indicator) */}
+            <div className="relative hidden lg:block w-48">
+              <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-base-content/40">
+                <Search size={14} />
+              </span>
+              <input
+                type="text"
+                placeholder="Quick search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full text-xs py-1.5 pl-8 pr-7 bg-base-200 border-none rounded-md focus:outline-none focus:ring-1 focus:ring-base-content/20 transition-all font-mono"
+              />
+              <span className="absolute inset-y-0 right-2 flex items-center pointer-events-none text-[10px] font-mono text-base-content/30 bg-base-300 px-1 my-1.5 rounded">
+                /
+              </span>
+            </div>
+
+            {/* Dark Mode Toggle */}
+            <button 
+              onClick={toggleTheme} 
+              className="btn btn-ghost btn-circle btn-sm text-base-content/80 hover:bg-base-200"
+              aria-label="Toggle theme"
+            >
+              {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
+
+            {/* Cart Button */}
+            <div className="relative">
+              <button 
+                onClick={() => setIsCartOpen(!isCartOpen)} 
+                className="btn btn-ghost btn-circle btn-sm text-base-content/80 hover:bg-base-200 relative"
+                aria-label="Open shopping cart"
+              >
+                <ShoppingCart size={18} />
+                {cart.length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-neutral text-[9px] font-bold text-neutral-content animate-pulse">
+                    {cart.length}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Submit template CTA */}
+            <a 
+              href="#pricing"
+              className="hidden sm:inline-flex items-center justify-center px-3.5 py-1.5 text-xs font-semibold bg-neutral text-neutral-content rounded-md hover:bg-neutral/90 transition-all"
+            >
+              Sell Templates
+            </a>
+          </div>
+
+        </div>
+      </header>
+
       {/* 2. HERO SECTION */}
       <section className="relative overflow-hidden bg-base-100 py-16 sm:py-24 border-b border-base-200">
         
@@ -781,6 +882,69 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 7. MINIMAL FOOTER */}
+      <footer className="bg-base-200 border-t border-base-300 py-12 text-xs text-base-content/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-5 gap-8">
+          {/* Brand col */}
+          <div className="col-span-2">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 bg-neutral text-neutral-content rounded flex items-center justify-center font-bold text-[10px]">
+                DC
+              </div>
+              <span className="font-semibold text-sm text-base-content font-sans">DevCraft</span>
+            </div>
+            <p className="mt-4 text-xs max-w-sm leading-relaxed text-base-content/50">
+              Premium, light-footprint code templates designed for professional engineers. Responsive layout grids, zero dependencies, and high Core Web Vital performance.
+            </p>
+            <div className="mt-6 flex items-center gap-3">
+              <a href="#" className="hover:text-base-content text-base-content/40">Github</a>
+              <span className="text-base-content/30">|</span>
+              <span className="font-mono text-[10px]">version 2.4.0</span>
+            </div>
+          </div>
+
+          {/* Links col 1 */}
+          <div>
+            <h4 className="font-semibold text-base-content uppercase tracking-wider text-[10px] mb-4 font-mono">Catalog</h4>
+            <ul className="space-y-2">
+              <li><button onClick={() => { setSelectedCategory("SaaS"); const el = document.getElementById("templates-catalog"); el?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:underline text-left cursor-pointer">SaaS Templates</button></li>
+              <li><button onClick={() => { setSelectedCategory("Dashboard"); const el = document.getElementById("templates-catalog"); el?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:underline text-left cursor-pointer">Admin Panels</button></li>
+              <li><button onClick={() => { setSelectedCategory("Docs"); const el = document.getElementById("templates-catalog"); el?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:underline text-left cursor-pointer">Documentation</button></li>
+              <li><button onClick={() => { setSelectedCategory("Blog"); const el = document.getElementById("templates-catalog"); el?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:underline text-left cursor-pointer">Clean Blogs</button></li>
+            </ul>
+          </div>
+
+          {/* Links col 2 */}
+          <div>
+            <h4 className="font-semibold text-base-content uppercase tracking-wider text-[10px] mb-4 font-mono">Resources</h4>
+            <ul className="space-y-2">
+              <li><a href="#" className="hover:underline">Documentation</a></li>
+              <li><a href="#" className="hover:underline">Support Desk</a></li>
+              <li><a href="#" className="hover:underline">Open Source</a></li>
+              <li><a href="#" className="hover:underline">License Terms</a></li>
+            </ul>
+          </div>
+
+          {/* Links col 3 */}
+          <div>
+            <h4 className="font-semibold text-base-content uppercase tracking-wider text-[10px] mb-4 font-mono">Company</h4>
+            <ul className="space-y-2">
+              <li><a href="#" className="hover:underline">About Us</a></li>
+              <li><a href="#" className="hover:underline">Blog News</a></li>
+              <li><a href="#" className="hover:underline">Contact Sales</a></li>
+              <li><a href="#" className="hover:underline">Privacy Policy</a></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-base-300 flex flex-col sm:flex-row justify-between items-center gap-4 text-base-content/40">
+          <span>&copy; {new Date().getFullYear()} DevCraft Templates. All rights reserved.</span>
+          <span className="flex items-center gap-1 text-[10px]">
+            Made by developers, for developers. <Check size={12} className="text-emerald-500" />
+          </span>
+        </div>
+      </footer>
 
       {/* 8. SLIDE-OVER DRAWER TEMPLATE INSPECTOR */}
       {inspectedTemplate && (

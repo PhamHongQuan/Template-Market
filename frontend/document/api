@@ -1,0 +1,31 @@
+frontend/
+│
+├── app/
+│   ├── login/
+│   ├── register/
+│   └── ...
+│
+├── components/
+│
+├── lib/
+│   ├── axios.ts          // cấu hình axios
+│   └── auth.ts           // helper token
+│
+├── services/
+│   ├── auth.service.ts
+│   ├── user.service.ts
+│   └── product.service.ts
+│
+├── types/
+│   ├── auth.ts
+│   ├── user.ts
+│   └── api.ts
+│
+├── hooks/
+│   ├── useAuth.ts
+│   └── ...
+│
+├── store/
+│   └── auth.store.ts
+│
+└── middleware.ts
