@@ -1,6 +1,40 @@
 import { create } from "zustand";
 import { User } from "../types/auth";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
+
+const EXPIRE_TIME = 1000 * 60 * 60;
+
+const sessionStorageWithExpiry: StateStorage = {
+  getItem: (name) => {
+    const value = sessionStorage.getItem(name);
+
+    if (!value) return null;
+
+    const item = JSON.parse(value);
+
+    // expiry
+    if (Date.now() > item.expiry) {
+      sessionStorage.removeItem(name);
+      return null;
+    }
+
+    return JSON.stringify(item.data);
+  },
+
+  setItem: (name, value) => {
+    sessionStorage.setItem(
+      name,
+      JSON.stringify({
+        data: JSON.parse(value),
+        expiry: Date.now() + EXPIRE_TIME,
+      }),
+    );
+  },
+
+  removeItem: (name) => {
+    sessionStorage.removeItem(name);
+  },
+};
 
 type AuthState = {
   user: User | null;
@@ -37,6 +71,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "auth-storage",
+      storage: createJSONStorage(() => sessionStorageWithExpiry),
     },
   ),
 );

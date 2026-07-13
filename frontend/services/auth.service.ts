@@ -20,12 +20,6 @@ class AuthService {
 
     return res.data;
   }
-
-  async me() {
-    const res = await api.get<ApiResponse<User>>("/auth/me");
-
-    return res.data;
-  }
 }
 
 export default new AuthService();

@@ -25,7 +25,14 @@ api.interceptors.response.use(
       useAuthStore.getState().logout();
     }
 
-    return Promise.reject(error);
+    return Promise.reject({
+      status: error.response?.status,
+      message:
+        error.response?.data?.message ??
+        error.message ??
+        "Something went wrong.",
+      data: error.response?.data,
+    });
   },
 );
 

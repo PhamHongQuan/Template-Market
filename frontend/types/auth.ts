@@ -30,3 +30,15 @@ export interface LoginData {
     token_type: string;
     user: User;
 }
+
+export interface UpdateProfileRequest {
+    name: string;
+    email: string;
+    phone: string;
+    bio: string;
+}
+
+export interface UpdatePasswordRequest {
+    current_password: string;
+    password: string;
+}

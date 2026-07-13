@@ -5,14 +5,18 @@ import Link from "next/link";
 import AuthService from "../../services/auth.service";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "../../stores/auth.store";
+import Loading from "@/components/ui/Loading";
+import { alert } from "@/lib/alert";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
     const login = useAuthStore((state) => state.login);
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
+        setLoading(true);
         try {
             const result = await AuthService.login({
                 email,
@@ -22,7 +26,12 @@ export default function LoginPage() {
             login(result.data.user, result.data.access_token);
             router.push("/");
         } catch (err: any) {
-            console.log(err.response?.data);
+            alert.error(
+                "Login Failed",
+                err.response?.data?.message ?? "Email or password is incorrect."
+            );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -36,7 +45,7 @@ export default function LoginPage() {
                 <label className="label">Email</label>
                 <input
                     type="email"
-                    name="email" 
+                    name="email"
                     autoComplete="email"
                     className="input w-full"
                     placeholder="Email"
@@ -56,7 +65,7 @@ export default function LoginPage() {
                 />
 
                 <button className="btn btn-neutral w-full mt-6" onClick={handleLogin}>
-                    Login
+                    {loading ? <Loading type="bars" size="sm" /> : "Login"}
                 </button>
                 <div className="divider my-6">OR</div>
 
