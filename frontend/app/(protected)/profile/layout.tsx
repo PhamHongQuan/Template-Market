@@ -12,9 +12,9 @@ import {
     LogOut,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth.store";
-import { useHydration } from "../hooks/useHydration";
 import { useRouter } from "next/dist/client/components/navigation";
 import authService from "@/services/auth.service";
+import { useHydration } from "@/app/hooks/useHydration";
 
 const menus = [
     {
