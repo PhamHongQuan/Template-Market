@@ -44,4 +44,14 @@ class AuthController extends Controller
             200
         );
     }
+
+    public function googleRedirect()
+    {
+        return $this->authService->googleRedirect();
+    }
+
+    public function googleCallback()
+    {
+        return $this->authService->googleCallback();
+    }
 }

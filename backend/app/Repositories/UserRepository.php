@@ -3,6 +3,7 @@
 namespace App\Repositories;
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use Illuminate\Support\Str;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -42,5 +43,14 @@ class UserRepository implements UserRepositoryInterface
         $user->save();
 
         return $user->refresh();
+    }
+
+    public function createGoogleUser($googleUser)
+    {
+        return User::create([
+            "name" => $googleUser->getName(),
+            "email" => $googleUser->getEmail(),
+            "password" => bcrypt(Str::random(32)),
+        ]);
     }
 }

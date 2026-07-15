@@ -8,6 +8,7 @@ import { useAuthStore } from "../../../stores/auth.store";
 import Loading from "@/components/ui/Loading";
 import { alert } from "@/lib/alert";
 import GuestGuard from "@/components/auth/GuestGuard";
+import { FcGoogle } from "react-icons/fc";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -68,6 +69,13 @@ export default function LoginPage() {
 
                     <button className="btn btn-neutral w-full mt-6" onClick={handleLogin}>
                         {loading ? <Loading type="bars" size="sm" /> : "Login"}
+                    </button>
+                    <button
+                        className="btn btn-outline w-full mt-3"
+                        onClick={() => AuthService.googleLogin()}
+                    >
+                        <FcGoogle className="text-xl" />
+                        Continue with Google
                     </button>
                     <div className="divider my-6">OR</div>
 

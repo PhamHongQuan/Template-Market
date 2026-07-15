@@ -18,6 +18,8 @@ use App\Enums\UserStatus;
     'phone',
     'avatar',
     'bio',
+    'google_id',
+    'provider',
     'role',
     'status',
     'last_login_at',

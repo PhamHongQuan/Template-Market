@@ -20,6 +20,16 @@ class AuthService {
 
     return res.data;
   }
+
+  async me() {
+    const res = await api.get<ApiResponse<User>>("/account/");
+
+    return res.data;
+  }
+
+  googleLogin() {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google/redirect`;
+  }
 }
 
 export default new AuthService();
