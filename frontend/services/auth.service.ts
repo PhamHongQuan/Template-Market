@@ -17,7 +17,7 @@ class AuthService {
   }
 
   async register(data: RegisterRequest) {
-    const res = await api.post<ApiResponse<User>>("/auth/register", data);
+    const res = await api.post<ApiResponse<LoginData>>("/auth/register", data);
 
     return res.data;
   }
