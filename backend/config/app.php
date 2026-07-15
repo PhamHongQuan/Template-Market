@@ -123,4 +123,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Frontend URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used to generate links for the frontend application, such as
+    | password reset links. You should set this to the root of the frontend
+    | application so that it's available within notifications and other
+    | UI elements where a frontend URL needs to be displayed.
+    |
+    */
+    'frontend_url' => env('FRONTEND_URL'),
 ];

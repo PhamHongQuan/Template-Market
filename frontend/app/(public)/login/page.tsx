@@ -67,6 +67,15 @@ export default function LoginPage() {
                         onChange={(e) => setPassword(e.target.value)}
                     />
 
+                    <div className="mt-2 text-right">
+                        <Link
+                            href="/forgot-password"
+                            className="link link-primary text-sm"
+                        >
+                            Forgot password?
+                        </Link>
+                    </div>
+
                     <button className="btn btn-neutral w-full mt-6" onClick={handleLogin}>
                         {loading ? <Loading type="bars" size="sm" /> : "Login"}
                     </button>

@@ -6,6 +6,8 @@ use App\Services\AuthService;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
@@ -53,5 +55,28 @@ class AuthController extends Controller
     public function googleCallback()
     {
         return $this->authService->googleCallback();
+    }
+
+   public function forgotPassword(ForgotPasswordRequest $request)
+        {
+            $this->authService->sendResetLink($request->validated()['email']);
+
+            return ApiResponse::success(
+                null,
+                'If the email exists, a password reset link has been sent.',
+                200
+            );
+        }
+
+
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $this->authService->resetPassword($request->validated());
+        
+        return ApiResponse::success(
+            null,
+            'Password has been reset successfully.',
+            200
+        );
     }
 }
