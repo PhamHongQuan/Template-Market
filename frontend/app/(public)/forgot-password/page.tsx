@@ -1,19 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import AuthService from "@/services/auth.service";
 import Loading from "@/components/ui/Loading";
 import { alert } from "@/lib/alert";
 import GuestGuard from "@/components/auth/GuestGuard";
+import Captcha from "@/components/reCaptcha/Captcha";
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
+    const captchaRef = useRef<ReCAPTCHA>(null);
+    const [captchaToken, setCaptchaToken] = useState("");
 
     const handleForgotPassword = async () => {
         if (!email.trim()) {
             alert.warning("Validation", "Please enter your email.");
+            return;
+        }
+
+        if (!captchaToken) {
+            alert.warning(
+                "Captcha",
+                "Please complete the captcha before logging in."
+            );
             return;
         }
 
@@ -22,6 +33,7 @@ export default function ForgotPasswordPage() {
         try {
             const result = await AuthService.forgotPassword({
                 email,
+                recaptcha_token: captchaToken,
             });
 
             alert.success(
@@ -63,6 +75,11 @@ export default function ForgotPasswordPage() {
                         autoComplete="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                    />
+
+                    <Captcha
+                        ref={captchaRef}
+                        onChange={setCaptchaToken}
                     />
 
                     <button

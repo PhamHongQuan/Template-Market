@@ -1,6 +1,7 @@
 export interface LoginRequest {
     email: string;
     password: string;
+    recaptcha_token: string;
 }
 
 export interface RegisterRequest {
@@ -8,6 +9,7 @@ export interface RegisterRequest {
     email: string;
     password: string;
     password_confirmation: string;
+    recaptcha_token: string;
 }
 
 export interface User {
@@ -45,6 +47,7 @@ export interface UpdatePasswordRequest {
 
 export interface ForgotPasswordRequest {
     email: string;
+    recaptcha_token: string;
 }
 
 export interface ResetPasswordRequest {

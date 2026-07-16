@@ -2,11 +2,12 @@
 
 import Loading from "@/components/ui/Loading";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AuthService from "../../../services/auth.service";
 import { alert } from "@/lib/alert";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
+import Captcha from "@/components/reCaptcha/Captcha";
 
 
 export default function RegisterPage() {
@@ -14,6 +15,8 @@ export default function RegisterPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const captchaRef = useRef<ReCAPTCHA>(null);
+    const [captchaToken, setCaptchaToken] = useState("");
 
     const [loading, setLoading] = useState(false);
     const login = useAuthStore((state) => state.login);
@@ -30,6 +33,13 @@ export default function RegisterPage() {
             return;
         }
 
+        if (!captchaToken) {
+            alert.warning(
+                "Captcha",
+                "Please complete the captcha before logging in."
+            );
+            return;
+        }
         setLoading(true);
 
         try {
@@ -38,6 +48,7 @@ export default function RegisterPage() {
                 email,
                 password,
                 password_confirmation: confirmPassword,
+                recaptcha_token: captchaToken,
             });
 
             login(result.data.user, result.data.access_token);
@@ -99,7 +110,10 @@ export default function RegisterPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-
+                <Captcha
+                    ref={captchaRef}
+                    onChange={setCaptchaToken}
+                />
                 <button className="btn btn-neutral w-full mt-6"
                     onClick={handleRegister}
                 >

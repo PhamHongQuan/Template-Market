@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\RecaptchaRule;
 
 class ForgotPasswordRequest extends FormRequest
 {
@@ -21,6 +22,10 @@ class ForgotPasswordRequest extends FormRequest
     {
         return [
             'email' => ['required', 'email'],
+            "recaptcha_token" => [
+                "required",
+                new RecaptchaRule(),
+            ],
         ];
     }
 
@@ -29,6 +34,7 @@ class ForgotPasswordRequest extends FormRequest
         return [
             'email.required' => 'Email is required.',
             'email.email' => 'Email is invalid.',
+            'recaptcha_token.required' => 'Captcha is required.',
         ];
     }
 }

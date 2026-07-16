@@ -75,7 +75,7 @@ class AuthController extends Controller
     public function resetPassword(ResetPasswordRequest $request)
     {
         $this->authService->resetPassword($request->validated());
-        
+
         return ApiResponse::success(
             null,
             'Password has been reset successfully.',

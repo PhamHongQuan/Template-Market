@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import AuthService from "../../../services/auth.service";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,8 @@ import Loading from "@/components/ui/Loading";
 import { alert } from "@/lib/alert";
 import GuestGuard from "@/components/auth/GuestGuard";
 import { FcGoogle } from "react-icons/fc";
+import Captcha from "@/components/reCaptcha/Captcha";
+
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -16,13 +18,24 @@ export default function LoginPage() {
     const router = useRouter();
     const login = useAuthStore((state) => state.login);
     const [loading, setLoading] = useState(false);
+    const captchaRef = useRef<ReCAPTCHA>(null);
+    const [captchaToken, setCaptchaToken] = useState("");
 
     const handleLogin = async () => {
+        if (!captchaToken) {
+            alert.warning(
+                "Captcha",
+                "Please complete the captcha before logging in."
+            );
+            return;
+        }
+
         setLoading(true);
         try {
             const result = await AuthService.login({
                 email,
                 password,
+                recaptcha_token: captchaToken,
             });
 
             login(result.data.user, result.data.access_token);
@@ -75,6 +88,11 @@ export default function LoginPage() {
                             Forgot password?
                         </Link>
                     </div>
+
+                    <Captcha
+                        ref={captchaRef}
+                        onChange={setCaptchaToken}
+                    />
 
                     <button className="btn btn-neutral w-full mt-6" onClick={handleLogin}>
                         {loading ? <Loading type="bars" size="sm" /> : "Login"}

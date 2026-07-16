@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\RecaptchaRule;
 
 class RegisterRequest extends FormRequest
 {
@@ -15,6 +16,10 @@ class RegisterRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
+            "recaptcha_token" => [
+                "required",
+                new RecaptchaRule(),
+            ],
         ];
     }
 
@@ -31,6 +36,7 @@ class RegisterRequest extends FormRequest
             'password.required' => 'Password is required.',
             'password.string' => 'Password must be a string.',
             'password.min' => 'Password must be at least 6 characters.',
+            'recaptcha_token.required' => 'Captcha is required.',
         ];
     }
 }
