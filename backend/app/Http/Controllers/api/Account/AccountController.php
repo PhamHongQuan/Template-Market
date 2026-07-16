@@ -9,6 +9,7 @@ use App\Services\AccountService;
 use App\Http\Resources\UserResource;
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Account\AvatarRequest;
 
 class AccountController extends Controller
 {
@@ -60,6 +61,22 @@ class AccountController extends Controller
             null,
             'Password changed successfully.',
             200
+        );
+    }
+
+    // Update avatar of the authenticated user
+    public function updateAvatar(AvatarRequest $request)
+    {
+        $result = new UserResource(
+            $this->accountService->updateAvatar(
+                $request->user(),
+                $request->file('avatar')
+            )
+        );
+
+        return ApiResponse::success(
+            $result,
+            'Avatar updated successfully.'
         );
     }
 }

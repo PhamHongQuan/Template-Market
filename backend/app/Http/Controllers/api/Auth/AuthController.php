@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
@@ -17,6 +18,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         $result = $this->authService->login($request->validated());
+        $result['user'] = new UserResource($result['user']);
 
         return ApiResponse::success(
             $result,
@@ -28,6 +30,7 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $result = $this->authService->register($request->validated());
+        $result['user'] = new UserResource($result['user']);
 
         return ApiResponse::success(
             $result,

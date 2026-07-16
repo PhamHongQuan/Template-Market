@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
+use Illuminate\Support\Facades\Storage;
 
 #[Fillable([
     'name',
@@ -29,7 +30,7 @@ use App\Enums\UserStatus;
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
-
+    protected $appends = ['avatar_url'];
     protected function casts(): array
     {
         return [
@@ -54,5 +55,18 @@ class User extends Authenticatable implements JWTSubject
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new ResetPasswordNotification($token));
+    }
+
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!$this->avatar) {
+            return null;
+        }
+
+        return Storage::disk('s3')->temporaryUrl(
+            $this->avatar,
+            now()->addDays(7),
+        );
     }
 }

@@ -17,7 +17,6 @@ class UpdateProfileRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
             'bio' => ['nullable', 'string'],
-            'avatar' => ['nullable', 'string'],
         ];
     }
 
@@ -30,7 +29,6 @@ class UpdateProfileRequest extends FormRequest
             'phone.string' => 'Phone must be a string.',
             'phone.max' => 'Phone must not exceed 20 characters.',
             'bio.string' => 'Bio must be a string.',
-            'avatar.string' => 'Avatar must be a string.',
         ];
     }
 }

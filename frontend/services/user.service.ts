@@ -14,6 +14,12 @@ class userService {
 
     return res.data;
   }
+
+  async updateAvatar(data: FormData) {
+    const res = await api.put<ApiResponse<User>>("/account/avatar", data);
+
+    return res.data;
+  }
 }
 
 export default new userService();

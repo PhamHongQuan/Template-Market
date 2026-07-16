@@ -26,4 +26,5 @@ Route::middleware('jwt')->prefix('account')->controller(AccountController::class
     Route::get('/', 'me');
     Route::put('/', 'update');
     Route::put('/password', 'changePassword');
+    Route::put('/avatar', 'updateAvatar');
 });

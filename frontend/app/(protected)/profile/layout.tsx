@@ -15,6 +15,10 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useRouter } from "next/dist/client/components/navigation";
 import authService from "@/services/auth.service";
 import { useHydration } from "@/app/hooks/useHydration";
+import { Camera } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import userService from "@/services/user.service";
+import { alert } from "@/lib/alert";
 
 const menus = [
     {
@@ -52,8 +56,18 @@ export default function ProfileLayout({
     const hydrated = useHydration();
     const pathname = usePathname();
     const user = useAuthStore((state) => state.user);
+    const setUser = useAuthStore((state) => state.setUser);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [uploading, setUploading] = useState(false);
 
     const router = useRouter();
+
+    useEffect(() => {
+        authService
+            .me()
+            .then((response) => setUser(response.data))
+            .catch(() => {});
+    }, [setUser]);
     const logout = useAuthStore((state) => state.logout);
 
     if (!hydrated) {
@@ -75,6 +89,34 @@ export default function ProfileLayout({
     };
 
 
+    const handleAvatarChange = async (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) {
+            alert.error("Avatar must be less than 2MB.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("avatar", file);
+
+        try {
+            setUploading(true);
+            const response = await userService.updateAvatar(formData);
+            setUser(response.data);
+            alert.success("Avatar updated successfully.");
+        } catch (error: any) {
+            alert.error(error.message);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-5 py-8">
             <div className="grid grid-cols-12 gap-8">
@@ -89,15 +131,34 @@ export default function ProfileLayout({
 
                             <div className="flex flex-col items-center">
 
-                                <div className="avatar">
-                                    <div className="w-24 rounded-full">
-                                        <Image
-                                            src="/avatar.png"
-                                            alt="Avatar"
-                                            width={100}
-                                            height={100}
-                                        />
-                                    </div>
+                                <div className="relative">
+
+                                    <Image
+                                        src={user?.avatar || "/avatar.png"}
+                                        alt="Avatar"
+                                        width={96}
+                                        height={96}
+                                        priority
+                                        className="w-24 h-24 rounded-full object-cover border"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-circle btn-primary btn-xs absolute bottom-0 right-0"
+                                        onClick={() => inputRef.current?.click()}
+                                        disabled={uploading}
+                                    >
+                                        <Camera size={14} />
+                                    </button>
+
+                                    <input
+                                        ref={inputRef}
+                                        hidden
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleAvatarChange}
+                                    />
+
                                 </div>
 
                                 <h2 className="text-xl font-bold mt-4">
