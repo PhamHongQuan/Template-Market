@@ -27,10 +27,10 @@ class LoginRequest extends FormRequest
                 'max:255',
             ],
 
-            "recaptcha_token" => [
-                "required",
-                new RecaptchaRule(),
-            ],
+            // "recaptcha_token" => [
+            //     "required",
+            //     new RecaptchaRule(),
+            // ],
         ];
     }
 
