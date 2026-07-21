@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import TemplateService from "@/services/template.service";
 
 import TemplateCard from "./TemplateCard";
+import TemplateGridSkeleton from "./skelenton/TemplateGridSkeleton";
 
 export default function TemplateGrid() {
     const {
@@ -18,16 +19,7 @@ export default function TemplateGrid() {
     });
 
     if (isLoading) {
-        return (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, index) => (
-                    <div
-                        key={index}
-                        className="skeleton h-80 rounded-xl"
-                    />
-                ))}
-            </div>
-        );
+        return <TemplateGridSkeleton count={3} />;
     }
 
     if (isError) {

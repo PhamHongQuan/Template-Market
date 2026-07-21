@@ -52,7 +52,7 @@ export default function LoginPage() {
 
     return (
         <GuestGuard>
-            <div className="min-h-screen flex items-center justify-center bg-base-100 w-md">
+            <div className="min-h-screen flex items-center justify-center bg-base-100">
                 <fieldset className="fieldset bg-base-200 border border-base-300 rounded-box w-full max-w-lg p-6 shadow-lg">
                     <legend className="fieldset-legend text-lg font-semibold">
                         Login

@@ -66,7 +66,7 @@ export default function ProfileLayout({
         authService
             .me()
             .then((response) => setUser(response.data))
-            .catch(() => {});
+            .catch(() => { });
     }, [setUser]);
     const logout = useAuthStore((state) => state.logout);
 
@@ -123,11 +123,11 @@ export default function ProfileLayout({
 
                 {/* Sidebar */}
 
-                <aside className="col-span-12 lg:col-span-3">
+                <aside className="col-span-12 lg:col-span-4 xl:col-span-3">
 
-                    <div className="card bg-base-200 shadow-xl sticky top-24">
+                    <div className="sticky top-24 rounded-2xl border border-base-300 bg-base-100 shadow-sm">
 
-                        <div className="card-body">
+                        <div className="p-8">
 
                             <div className="flex flex-col items-center">
 
@@ -136,8 +136,8 @@ export default function ProfileLayout({
                                     <Image
                                         src={user?.avatar || "/avatar.png"}
                                         alt="Avatar"
-                                        width={96}
-                                        height={96}
+                                        width={112}
+                                        height={112}
                                         priority
                                         className="w-24 h-24 rounded-full object-cover border"
                                     />
@@ -161,15 +161,15 @@ export default function ProfileLayout({
 
                                 </div>
 
-                                <h2 className="text-xl font-bold mt-4">
+                                <h2 className="mt-5 text-xl font-semibold">
                                     {user?.name}
                                 </h2>
 
-                                <p className="text-sm opacity-70">
+                                <p className="mt-1 text-sm text-base-content/60">
                                     {user?.email}
                                 </p>
 
-                                <div className="badge badge-primary mt-3">
+                                <div className="badge badge-outline mt-4">
                                     Member
                                 </div>
 
@@ -180,33 +180,37 @@ export default function ProfileLayout({
                             <ul className="menu w-full">
 
                                 {menus.map((item) => {
-
                                     const Icon = item.icon;
+
+                                    const isActive =
+                                        item.href === "/profile"
+                                            ? pathname === "/profile"
+                                            : pathname.startsWith(item.href);
 
                                     return (
                                         <li key={item.href}>
                                             <Link
                                                 href={item.href}
-                                                className={
-                                                    pathname === item.href
-                                                        ? "active"
-                                                        : ""
-                                                }
+                                                className={`flex h-12 items-center gap-3 rounded-xl px-4 transition-all ${isActive
+                                                        ? "bg-neutral text-neutral-content"
+                                                        : "hover:bg-base-200"
+                                                    }`}
                                             >
-                                                <Icon size={18} />
+                                                <Icon size={20} />
                                                 {item.title}
                                             </Link>
                                         </li>
                                     );
-
                                 })}
 
                             </ul>
 
                             <div className="divider" />
 
-                            <button className="btn btn-error btn-outline"
-                                onClick={handleLogout}>
+                            <button
+                                className="btn btn-outline w-full justify-start"
+                                onClick={handleLogout}
+                            >
                                 <LogOut size={18} />
                                 Logout
                             </button>

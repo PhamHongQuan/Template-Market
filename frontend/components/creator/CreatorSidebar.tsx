@@ -51,9 +51,9 @@ export default function CreatorSidebar() {
 
     return (
 
-        <aside className="w-72 min-h-full bg-base-100">
+        <aside className="w-80 min-h-full bg-base-100">
 
-            <div className="p-6">
+            <div className="px-8 py-8">
 
                 <h1 className="font-bold text-2xl">
 
@@ -69,33 +69,29 @@ export default function CreatorSidebar() {
 
             </div>
 
-            <ul className="menu">
+            <ul className="menu w-full px-4">
 
                 {menus.map((menu) => {
-
                     const Icon = menu.icon;
 
+                    const isActive =
+                        menu.href === "/creator"
+                            ? pathname === "/creator"
+                            : pathname.startsWith(menu.href);
+
                     return (
-
                         <li key={menu.href}>
-
                             <Link
                                 href={menu.href}
-                                className={
-                                    pathname === menu.href
-                                        ? "active"
-                                        : ""
-                                }
+                                className={`gap-3 rounded-lg transition-colors ${isActive
+                                    ? "bg-neutral text-neutral-content font-medium"
+                                    : "hover:bg-base-200"
+                                    }`}
                             >
-
-                                <Icon size={18} />
-
+                                <Icon size={20} />
                                 {menu.title}
-
                             </Link>
-
                         </li>
-
                     );
                 })}
 

@@ -6,7 +6,7 @@ import {
   User,
   Sun,
   Moon,
-  ShoppingCart,
+  Palette,
   LogOut
 } from "lucide-react";
 import Link from "next/link";
@@ -69,13 +69,49 @@ export default function Navbar() {
           <div className="hidden sm:flex items-center gap-2">
             {user ? (
               <div className="relative group">
-                <Link
-                  href="/profile"
-                  className="flex items-center gap-2 py-2 cursor-pointer text-base-content/80 hover:text-base-content transition-colors">
-                  <User
-                    size={18} />
-                  <span className="text-sm font-medium">{user.name}</span>
-                </Link>
+                {/* Trigger */}
+                <div className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-base-200">
+                  <User size={18} />
+
+                  <span className="text-sm font-medium">
+                    {user.name}
+                  </span>
+
+                  <ChevronDown
+                    size={16}
+                    className="transition-transform duration-200 group-hover:rotate-180"
+                  />
+                </div>
+
+                {/* Dropdown */}
+                <div className="invisible absolute right-0 top-full z-50 mt-2 w-44 translate-y-2 rounded-xl border border-base-300 bg-base-100 p-2 opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-base-200"
+                  >
+                    <User size={16} />
+                    Profile
+                  </Link>
+
+                  <Link
+                    href="/creator"
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-base-200"
+                  >
+                    <Palette size={16} />
+                    Creator
+                  </Link>
+
+                  <button
+                    onClick={() => {
+                      useAuthStore.getState().logout();
+                      router.push("/login");
+                    }}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-base-200 cursor-pointer"
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </div>
               </div>
             ) : (
               <Link href="/login" className="py-2">
