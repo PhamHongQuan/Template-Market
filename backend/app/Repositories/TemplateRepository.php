@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Template;
+use App\Models\User;
 use App\Repositories\Interfaces\TemplateRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -90,5 +91,18 @@ class TemplateRepository implements TemplateRepositoryInterface
         return $query
             ->latest()
             ->paginate($perPage);
+    }
+
+
+    public function myTemplates(User $user)
+    {
+        return Template::query()
+            ->where('user_id', $user->id)
+            ->with([
+                "category",
+                "thumbnail",
+            ])
+            ->latest()
+            ->get();
     }
 }

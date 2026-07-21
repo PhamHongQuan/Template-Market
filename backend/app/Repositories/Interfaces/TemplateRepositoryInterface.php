@@ -3,6 +3,7 @@
 namespace App\Repositories\Interfaces;
 
 use App\Models\Template;
+use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 interface TemplateRepositoryInterface
@@ -21,4 +22,6 @@ interface TemplateRepositoryInterface
         int $perPage = 15,
         array $filters = []
     ): LengthAwarePaginator;
+
+    public function myTemplates(User $user);
 }

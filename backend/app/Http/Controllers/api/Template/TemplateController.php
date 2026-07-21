@@ -160,4 +160,15 @@ class TemplateController extends Controller
         );
     }
 
+
+    // Get templates created by the authenticated user
+    public function myTemplates(Request $request)
+    {
+        $templates = $this->service->myTemplates(auth()->user());
+
+        return ApiResponse::success(
+            TemplateResource::collection($templates),
+            'My templates retrieved successfully.'
+        );
+    }
 }

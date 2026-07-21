@@ -22,12 +22,6 @@ class StoreTemplateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => [
-                'required',
-                'integer',
-                'exists:users,id',
-            ],
-
             'category_id' => [
                 'required',
                 'integer',
@@ -64,9 +58,6 @@ class StoreTemplateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'user_id.required' => 'User ID is required.',
-            'user_id.integer' => 'User ID must be an integer.',
-            'user_id.exists' => 'User does not exist.',
             'category_id.required' => 'Category is required.',
             'category_id.exists' => 'Category does not exist.',
 

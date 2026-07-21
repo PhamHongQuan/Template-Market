@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\TemplateStatus;
 use App\Models\Template;
+use App\Models\User;
 use App\Repositories\Interfaces\TemplateRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
@@ -19,6 +20,7 @@ class TemplateService
     {
         $data['slug'] = Str::slug($data['title']);
         $data['status'] = TemplateStatus::DRAFT;
+        $data['user_id'] = auth()->id();
 
         return $this->repository->create($data);
     }
@@ -63,5 +65,10 @@ class TemplateService
             $perPage,
             $filters
         );
+    }
+
+    public function myTemplates(User $user)
+    {
+        return $this->repository->myTemplates($user);
     }
 }

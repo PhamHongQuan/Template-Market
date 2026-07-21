@@ -46,28 +46,24 @@ Route::prefix('categories')
 // Public Template Routes
 Route::prefix('templates')->group(function () {
 
-    // CRUD Template
     Route::get('/', [TemplateController::class, 'index']);
-    Route::post('/', [TemplateController::class, 'store']);
+
+    Route::middleware('jwt')->group(function () {
+
+        Route::get('/my', [TemplateController::class, 'myTemplates']);
+
+        Route::post('/', [TemplateController::class, 'store']);
+
+        Route::put('/{id}', [TemplateController::class, 'update']);
+
+        Route::delete('/{id}', [TemplateController::class, 'destroy']);
+
+        Route::post('/{id}/thumbnail', [TemplateController::class, 'uploadThumbnail']);
+
+        Route::post('/{id}/preview', [TemplateController::class, 'uploadPreview']);
+
+        Route::post('/{id}/source', [TemplateController::class, 'uploadSource']);
+    });
+
     Route::get('/{id}', [TemplateController::class, 'show']);
-    Route::put('/{id}', [TemplateController::class, 'update']);
-    Route::delete('/{id}', [TemplateController::class, 'destroy']);
-
-    // Upload thumbnail
-    Route::post(
-        '/{id}/thumbnail',
-        [TemplateController::class, 'uploadThumbnail']
-    );
-
-    // Upload preview images
-    Route::post(
-        '/{id}/preview',
-        [TemplateController::class, 'uploadPreview']
-    );
-
-    // Upload source file
-    Route::post(
-        '/{id}/source',
-        [TemplateController::class, 'uploadSource']
-    );
 });
