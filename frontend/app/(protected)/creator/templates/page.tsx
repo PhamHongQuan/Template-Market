@@ -1,6 +1,8 @@
+import Link from "next/link";
 import SearchBar from "@/components/creator/templates/SearchBar";
 import FilterBar from "@/components/creator/templates/FilterBar";
 import TemplateGrid from "@/components/creator/templates/TemplateGrid";
+import Button from "@/components/ui/Button";
 
 export default function MyTemplatesPage() {
     return (
@@ -18,9 +20,11 @@ export default function MyTemplatesPage() {
                     </p>
                 </div>
 
-                <button className="btn btn-primary">
-                    Upload Template
-                </button>
+                <Link href="/creator/upload">
+                    <Button>
+                        Upload Template
+                    </Button>
+                </Link>
 
             </div>
 

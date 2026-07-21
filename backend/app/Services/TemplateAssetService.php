@@ -132,6 +132,15 @@ class TemplateAssetService
         array $files
     ): Collection {
 
+        $oldPreviews = $template->assets()
+            ->where('asset_type', TemplateAssetType::PREVIEW)
+            ->get();
+
+        foreach ($oldPreviews as $preview) {
+            Storage::disk('s3')->delete($preview->path);
+            $preview->delete();
+        }
+
         return collect($files)->map(
             fn (UploadedFile $file) => $this->storeAsset(
                 $template,

@@ -34,6 +34,7 @@ export default function PreviewUpload() {
         e: React.DragEvent<HTMLDivElement>
     ) => {
         e.preventDefault();
+        e.stopPropagation();
 
         setDragging(false);
 
@@ -43,19 +44,9 @@ export default function PreviewUpload() {
     return (
         <div className="card bg-base-100 border shadow-sm">
             <div className="card-body">
-                <div className="flex justify-between items-center">
-                    <h2 className="card-title">
-                        Preview Images
-                    </h2>
-
-                    <button
-                        type="button"
-                        className="btn btn-primary btn-sm"
-                        onClick={() => inputRef.current?.click()}
-                    >
-                        Add Images
-                    </button>
-                </div>
+                <h2 className="card-title">
+                    Preview Images
+                </h2>
 
                 <input
                     ref={inputRef}
@@ -67,17 +58,20 @@ export default function PreviewUpload() {
                 />
 
                 <div
-                    className={`mt-5 border-2 border-dashed rounded-xl p-5 transition ${
-                        dragging
-                            ? "border-primary bg-primary/5"
-                            : "border-base-300"
-                    }`}
+                    className={`mt-5 border-2 border-dashed rounded-xl p-5 cursor-pointer transition
+                        ${
+                            dragging
+                                ? "border-primary bg-primary/10"
+                                : "border-base-300 hover:bg-base-200/50"
+                        }`}
+                    onClick={() => inputRef.current?.click()}
+                    onDrop={handleDrop}
                     onDragOver={(e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                     }}
                     onDragEnter={() => setDragging(true)}
                     onDragLeave={() => setDragging(false)}
-                    onDrop={handleDrop}
                 >
                     {previews.length === 0 ? (
                         <div className="h-48 flex flex-col justify-center items-center text-center">
@@ -86,19 +80,25 @@ export default function PreviewUpload() {
                             </p>
 
                             <p className="text-sm text-base-content/60 mt-2">
-                                or click "Add Images"
+                                or click to choose images
                             </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {previews.map((file, index) => (
-                                <PreviewItem
-                                    key={`${file.name}-${index}`}
-                                    file={file}
-                                    index={index}
-                                    onRemove={removePreview}
-                                />
-                            ))}
+                        <div className="space-y-5">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {previews.map((file, index) => (
+                                    <PreviewItem
+                                        key={`${file.name}-${index}`}
+                                        file={file}
+                                        index={index}
+                                        onRemove={removePreview}
+                                    />
+                                ))}
+                            </div>
+
+                            <div className="text-center text-sm text-base-content/60">
+                                Click or drag & drop to add more images
+                            </div>
                         </div>
                     )}
                 </div>
@@ -106,6 +106,7 @@ export default function PreviewUpload() {
         </div>
     );
 }
+
 
 function PreviewItem({
     file,
@@ -122,7 +123,10 @@ function PreviewItem({
     );
 
     return (
-        <div className="relative group">
+        <div
+            className="relative group"
+            onClick={(e) => e.stopPropagation()}
+        >
             <img
                 src={previewUrl}
                 alt={file.name}
@@ -131,7 +135,12 @@ function PreviewItem({
 
             <button
                 type="button"
-                className="btn btn-circle btn-error btn-xs absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition"
+                className="absolute top-2 right-2 
+                    w-6 h-6 rounded-full
+                    bg-black text-white
+                    text-xs opacity-0 
+                    group-hover:opacity-100
+                    transition"
                 onClick={() => onRemove(index)}
             >
                 ✕

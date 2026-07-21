@@ -10,6 +10,8 @@ import {
 
 import Price from "@/components/common/Price";
 import { Template } from "@/types/template";
+import { useDeleteTemplate } from "@/app/hooks/useDeleteTemplate";
+import { alert } from "@/lib/alert";
 
 interface TemplateCardProps {
     template: Template;
@@ -18,6 +20,18 @@ interface TemplateCardProps {
 export default function TemplateCard({
     template,
 }: TemplateCardProps) {
+    const deleteMutation = useDeleteTemplate();
+
+    const handleDelete = async () => {
+        const result = await alert.confirm(
+            `Are you sure you want to delete "${template.title}"?`
+        );
+
+        if (!result.isConfirmed) return;
+
+        deleteMutation.mutate(template.id);
+    };
+
     return (
         <div className="group overflow-hidden rounded-2xl border border-base-300 bg-base-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
             {/* Thumbnail */}
@@ -26,6 +40,8 @@ export default function TemplateCard({
                     src={template.thumbnail?.url ?? "/images/no-image.png"}
                     alt={template.title}
                     fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    loading="eager"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
 
@@ -97,9 +113,18 @@ export default function TemplateCard({
 
                     <button
                         type="button"
+                        onClick={handleDelete}
+                        disabled={deleteMutation.isPending}
                         className="btn btn-outline btn-sm"
                     >
-                        <Trash2 size={16} />
+                        <Trash2
+                            size={16}
+                            className={
+                                deleteMutation.isPending
+                                    ? "animate-spin"
+                                    : ""
+                            }
+                        />
                     </button>
                 </div>
             </div>

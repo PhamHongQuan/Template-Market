@@ -7,6 +7,7 @@ use App\Models\Template;
 use App\Models\User;
 use App\Repositories\Interfaces\TemplateRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class TemplateService
@@ -46,6 +47,19 @@ class TemplateService
         Template $template
     ): bool {
 
+        // Delete assets from S3 storage
+        if ($template->assets()->exists()) {
+
+            foreach ($template->assets as $asset) {
+
+                if (Storage::disk('s3')->exists($asset->path)) {
+                    Storage::disk('s3')->delete($asset->path);
+                }
+            }
+        }
+
+        // Delete asset from database
+        $template->assets()->delete();
         return $this->repository->delete($template);
     }
 

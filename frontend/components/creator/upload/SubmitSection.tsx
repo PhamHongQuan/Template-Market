@@ -8,6 +8,9 @@ import TemplateAssetService from "@/services/templateAsset.service";
 
 import { useUploadTemplateStore } from "@/stores/uploadTemplate.store";
 import { useAuthStore } from "@/stores/auth.store";
+import { alert } from "@/lib/alert";
+import Button from "@/components/ui/Button";
+import Loading from "@/components/ui/Loading";
 
 export default function SubmitSection() {
     const router = useRouter();
@@ -27,32 +30,32 @@ export default function SubmitSection() {
     const handleSubmit = async () => {
         try {
             if (!user) {
-                alert("Please login.");
+                alert.warning("Please login.");
                 return;
             }
 
             if (!basic.category_id) {
-                alert("Please select a category.");
+                alert.warning("Please select a category.");
                 return;
             }
 
             if (!basic.title.trim()) {
-                alert("Please enter a title.");
+                alert.warning("Please enter a title.");
                 return;
             }
 
             if (!thumbnail) {
-                alert("Please upload a thumbnail.");
+                alert.warning("Please upload a thumbnail.");
                 return;
             }
 
             if (previews.length === 0) {
-                alert("Please upload preview images.");
+                alert.warning("Please upload preview images.");
                 return;
             }
 
             if (!source) {
-                alert("Please upload the source ZIP.");
+                alert.warning("Please upload the source ZIP.");
                 return;
             }
 
@@ -83,7 +86,7 @@ export default function SubmitSection() {
                 source
             );
 
-            alert("Template uploaded successfully.");
+            alert.success("Template uploaded successfully.");
 
             reset();
 
@@ -91,7 +94,7 @@ export default function SubmitSection() {
         } catch (error) {
             console.error(error);
 
-            alert("Upload failed.");
+            alert.error("Upload failed.");
         } finally {
             setLoading(false);
         }
@@ -106,15 +109,12 @@ export default function SubmitSection() {
                 Cancel
             </Link>
 
-            <button
-                className="btn btn-primary"
+            <Button
                 disabled={loading}
                 onClick={handleSubmit}
             >
-                {loading
-                    ? "Publishing..."
-                    : "Publish Template"}
-            </button>
+                <Loading/> Submit
+            </Button>
         </div>
     );
 }

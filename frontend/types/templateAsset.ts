@@ -1,21 +1,27 @@
-export interface TemplateAsset {
-    id: number;
+// export type TemplateAssetType =
+//     | "thumbnail"
+//     | "preview"
+//     | "source";
 
-    type: string;
 
-    original_name: string;
+// export interface TemplateAsset {
+//     id: number;
 
-    path: string;
+//     type: TemplateAssetType;
 
-    url: string;
+//     original_name: string;
 
-    mime_type: string;
+//     path: string;
 
-    extension: string;
+//     url: string;
 
-    size: number;
+//     mime_type: string;
 
-    sort_order: number;
+//     extension: string;
 
-    created_at: string;
-}
+//     size: number;
+
+//     sort_order: number;
+
+//     created_at: string;
+// }
