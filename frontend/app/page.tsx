@@ -1,465 +1,101 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
-  Search,
   ArrowRight,
-  Code,
-  Layers,
-  CheckCircle2,
-  Star,
-  X,
-  Check,
-  Sun,
-  Moon,
-  ShoppingCart,
   Sparkles,
   BookOpen,
-  Monitor,
   Package,
 } from "lucide-react";
 
-// Types
-interface Template {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  category: string;
-  tags: string[];
-  rating: number;
-  reviews: number;
-  author: string;
-  previewType: "dashboard" | "saas" | "portfolio" | "blog" | "docs" | "ecommerce";
-  features: string[];
-  pages: number;
-  lighthouseScore: number;
-}
-
-// Mock Data
-const TEMPLATES: Template[] = [
-  {
-    id: "nexus-admin",
-    title: "Nexus Admin",
-    description: "A high-performance admin dashboard layout optimized for data-dense interfaces, analytics and complex charts.",
-    price: 49,
-    category: "Dashboard",
-    tags: ["Next.js 15", "Tailwind v4", "Recharts", "TypeScript"],
-    rating: 4.9,
-    reviews: 24,
-    author: "DevCraft Team",
-    previewType: "dashboard",
-    features: [
-      "Complete analytics and monitoring dashboards",
-      "Robust dark mode out of the box with custom theme support",
-      "Dynamic tables with multi-column sorting and paginations",
-      "Fully responsive collapsable sidebar with drawer controls",
-      "Modular routing & complete page-level layouts"
-    ],
-    pages: 18,
-    lighthouseScore: 98,
-  },
-  {
-    id: "launchpad-saas",
-    title: "LaunchPad SaaS",
-    description: "A high-converting SaaS landing page with clean layouts, feature highlights, and interactive pricing plans.",
-    price: 29,
-    category: "SaaS",
-    tags: ["Next.js 15", "Tailwind v4", "Framer Motion", "React 19"],
-    rating: 4.8,
-    reviews: 18,
-    author: "DevCraft Team",
-    previewType: "saas",
-    features: [
-      "Optimized for high landing conversions & fast parsing",
-      "Clean sections with fine entry animations and smooth transitions",
-      "Interactive Pricing plans with yearly/monthly billing toggles",
-      "Fully functional contact and email signup modal integration",
-      "Accessible markup with complete ARIA role tags"
-    ],
-    pages: 4,
-    lighthouseScore: 100,
-  },
-  {
-    id: "astrodocs",
-    title: "AstroDocs",
-    description: "Clean, lightning-fast documentation template featuring nested sidebars, search box, and keyboard shortcuts.",
-    price: 0, // Free
-    category: "Docs",
-    tags: ["Astro 5.0", "Tailwind v4", "Markdown MDX"],
-    rating: 4.7,
-    reviews: 32,
-    author: "OpenSource Lab",
-    previewType: "docs",
-    features: [
-      "Full Markdown and MDX layout wrapper configuration",
-      "Search-as-you-type indexing using local static content",
-      "Developer keyboard shortcuts (⌘K Command menu blueprint)",
-      "Mobile-friendly navigation panel with sweep gestures",
-      "Syntax highlighting preset powered by Shikji engine"
-    ],
-    pages: 12,
-    lighthouseScore: 100,
-  },
-  {
-    id: "chronicle-blog",
-    title: "Chronicle Blog",
-    description: "A content-first typography layout for writers, software builders, and engineering teams.",
-    price: 19,
-    category: "Blog",
-    tags: ["Astro 5.0", "React 19", "Tailwind v4"],
-    rating: 4.9,
-    reviews: 14,
-    author: "DevCraft Team",
-    previewType: "blog",
-    features: [
-      "Beautiful custom typography using Tailwind Prose defaults",
-      "Automatic dynamic XML sitemaps and localized RSS feeds",
-      "Near-zero client bundle footprint (extremely fast server render)",
-      "Multi-author settings with custom author page routing",
-      "Interactive comments component integration blueprint"
-    ],
-    pages: 8,
-    lighthouseScore: 99,
-  },
-  {
-    id: "velo-portfolio",
-    title: "Velo Portfolio",
-    description: "A minimal visual resume layout to showcase your client works, active repositories, and side-projects.",
-    price: 0, // Free
-    category: "Portfolio",
-    tags: ["React 19", "Vite", "Tailwind v4"],
-    rating: 4.6,
-    reviews: 41,
-    author: "OpenSource Lab",
-    previewType: "portfolio",
-    features: [
-      "Minimalist single-column timeline displaying history blocks",
-      "Clean API client blueprint to fetch direct GitHub repos",
-      "Contact form mockups mapped to serverless integrations",
-      "Ultra-responsive grid adjusting perfectly down to mobile screens",
-      "Static single-file config setup for swift replacements"
-    ],
-    pages: 2,
-    lighthouseScore: 100,
-  },
-  {
-    id: "cartflow-shop",
-    title: "CartFlow Shop",
-    description: "A high-performance store front with cart state management, checkout simulation, and responsive search filters.",
-    price: 59,
-    category: "E-Commerce",
-    tags: ["Next.js 15", "Tailwind v4", "Zustand"],
-    rating: 4.9,
-    reviews: 11,
-    author: "DevCraft Team",
-    previewType: "ecommerce",
-    features: [
-      "Ready-to-use cart drawer state using local context stores",
-      "Responsive checkout and billing mock layout flows",
-      "Refined filters sidebar for categories, sizes, and pricing",
-      "Optimized picture grids with lazy-loading state controls",
-      "Clean product detail views with slider carousels"
-    ],
-    pages: 9,
-    lighthouseScore: 97,
-  },
-];
-
-const CATEGORIES = ["All", "SaaS", "Dashboard", "Docs", "Blog", "Portfolio", "E-Commerce"];
-
-// SVG Wireframe Previews (clean, developer-centric representation of the website layout)
-function TemplatePreview({ type }: { type: Template["previewType"] }) {
-  if (type === "dashboard") {
-    return (
-      <svg className="w-full h-full bg-zinc-50 dark:bg-zinc-950" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Sidebar */}
-        <rect x="0" y="0" width="80" height="240" className="fill-zinc-200 dark:fill-zinc-900" />
-        <rect x="10" y="15" width="60" height="8" rx="2" className="fill-zinc-400 dark:fill-zinc-700" />
-        <rect x="15" y="45" width="50" height="5" rx="1.5" className="fill-zinc-300 dark:fill-zinc-800" />
-        <rect x="15" y="60" width="50" height="5" rx="1.5" className="fill-zinc-300 dark:fill-zinc-800" />
-        <rect x="15" y="75" width="50" height="5" rx="1.5" className="fill-zinc-300 dark:fill-zinc-800" />
-        <rect x="15" y="90" width="50" height="5" rx="1.5" className="fill-zinc-300 dark:fill-zinc-800" />
-        {/* Top Navbar */}
-        <rect x="80" y="0" width="320" height="35" className="fill-zinc-100 dark:fill-zinc-920" />
-        <line x1="80" y1="35" x2="400" y2="35" className="stroke-zinc-200 dark:stroke-zinc-850" strokeWidth="1" />
-        <circle cx="375" cy="17" r="8" className="fill-zinc-300 dark:fill-zinc-750" />
-        <rect x="95" y="12" width="70" height="10" rx="3" className="fill-zinc-200 dark:fill-zinc-800" />
-        {/* Dashboard Content */}
-        <rect x="95" y="50" width="135" height="75" rx="5" className="fill-white dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        <path d="M 105 110 L 130 90 L 155 105 L 180 75 L 205 95 L 220 85" className="stroke-zinc-400 dark:stroke-zinc-650" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        
-        <rect x="245" y="50" width="140" height="75" rx="5" className="fill-white dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        <rect x="260" y="85" width="10" height="30" rx="1" className="fill-zinc-300 dark:fill-zinc-750" />
-        <rect x="280" y="70" width="10" height="45" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        <rect x="300" y="90" width="10" height="25" rx="1" className="fill-zinc-300 dark:fill-zinc-750" />
-        <rect x="320" y="75" width="10" height="40" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        <rect x="340" y="80" width="10" height="35" rx="1" className="fill-zinc-300 dark:fill-zinc-750" />
-
-        {/* Full row table */}
-        <rect x="95" y="140" width="290" height="85" rx="5" className="fill-white dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        <line x1="95" y1="168" x2="385" y2="168" className="stroke-zinc-150 dark:stroke-zinc-850" strokeWidth="1" />
-        <line x1="95" y1="195" x2="385" y2="195" className="stroke-zinc-150 dark:stroke-zinc-850" strokeWidth="1" />
-        <rect x="110" y="150" width="50" height="6" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        <rect x="110" y="177" width="80" height="6" rx="1" className="fill-zinc-300 dark:fill-zinc-750" />
-        <rect x="110" y="204" width="70" height="6" rx="1" className="fill-zinc-300 dark:fill-zinc-750" />
-        <circle cx="365" cy="153" r="3.5" className="fill-emerald-400 dark:fill-emerald-600" />
-        <circle cx="365" cy="180" r="3.5" className="fill-amber-400 dark:fill-amber-600" />
-        <circle cx="365" cy="207" r="3.5" className="fill-emerald-400 dark:fill-emerald-600" />
-      </svg>
-    );
-  }
-
-  if (type === "saas") {
-    return (
-      <svg className="w-full h-full bg-zinc-50 dark:bg-zinc-950" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Navigation */}
-        <rect x="0" y="0" width="400" height="30" className="fill-white dark:fill-zinc-950" />
-        <line x1="0" y1="30" x2="400" y2="30" className="stroke-zinc-200 dark:stroke-zinc-850" strokeWidth="1" />
-        <circle cx="20" cy="15" r="5" className="fill-zinc-400 dark:fill-zinc-600" />
-        <rect x="32" y="12" width="20" height="6" rx="1.5" className="fill-zinc-300 dark:fill-zinc-800" />
-        <rect x="150" y="13" width="20" height="4" rx="1" className="fill-zinc-300 dark:fill-zinc-850" />
-        <rect x="180" y="13" width="20" height="4" rx="1" className="fill-zinc-300 dark:fill-zinc-850" />
-        <rect x="210" y="13" width="20" height="4" rx="1" className="fill-zinc-300 dark:fill-zinc-850" />
-        <rect x="340" y="8" width="45" height="14" rx="3" className="fill-zinc-850 dark:fill-zinc-200" />
-        
-        {/* Hero Section */}
-        <rect x="110" y="50" width="180" height="8" rx="2" className="fill-zinc-800 dark:fill-zinc-200" />
-        <rect x="80" y="64" width="240" height="6" rx="1.5" className="fill-zinc-400 dark:fill-zinc-600" />
-        <rect x="155" y="80" width="90" height="12" rx="3" className="fill-zinc-800 dark:fill-zinc-200" />
-        
-        {/* Floating Page Mockup */}
-        <rect x="60" y="105" width="280" height="135" rx="6" className="fill-white dark:fill-zinc-900 stroke-zinc-250 dark:stroke-zinc-800" strokeWidth="1.5" />
-        {/* Content mockup inside float */}
-        <rect x="75" y="120" width="250" height="25" rx="3" className="fill-zinc-50 dark:fill-zinc-950 stroke-zinc-150 dark:stroke-zinc-850" strokeWidth="1" />
-        <circle cx="90" cy="132" r="5" className="fill-zinc-200 dark:fill-zinc-800" />
-        <rect x="105" y="129" width="50" height="6" rx="1" className="fill-zinc-300 dark:fill-zinc-700" />
-        <rect x="285" y="126" width="30" height="12" rx="2.5" className="fill-zinc-800 dark:fill-zinc-200" />
-        
-        <rect x="75" y="155" width="115" height="60" rx="3" className="fill-zinc-50 dark:fill-zinc-950 stroke-zinc-150 dark:stroke-zinc-850" strokeWidth="1" />
-        <rect x="210" y="155" width="115" height="60" rx="3" className="fill-zinc-50 dark:fill-zinc-950 stroke-zinc-150 dark:stroke-zinc-850" strokeWidth="1" />
-      </svg>
-    );
-  }
-
-  if (type === "docs") {
-    return (
-      <svg className="w-full h-full bg-zinc-50 dark:bg-zinc-950" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Header */}
-        <rect x="0" y="0" width="400" height="30" className="fill-white dark:fill-zinc-950" />
-        <line x1="0" y1="30" x2="400" y2="30" className="stroke-zinc-200 dark:stroke-zinc-850" strokeWidth="1" />
-        <circle cx="20" cy="15" r="5" className="fill-zinc-400 dark:fill-zinc-600" />
-        <rect x="35" y="12" width="40" height="6" rx="1.5" className="fill-zinc-850 dark:fill-zinc-200" />
-        <rect x="310" y="8" width="70" height="14" rx="3.5" className="fill-zinc-100 dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        
-        {/* Left Doc Menu Sidebar */}
-        <rect x="0" y="30" width="95" height="210" className="fill-zinc-100 dark:fill-zinc-920" />
-        <line x1="95" y1="30" x2="95" y2="240" className="stroke-zinc-200 dark:stroke-zinc-850" strokeWidth="1" />
-        <rect x="15" y="45" width="65" height="5" rx="1" className="fill-zinc-400 dark:fill-zinc-650" />
-        <rect x="15" y="60" width="55" height="4" rx="1" className="fill-zinc-300 dark:fill-zinc-800" />
-        <rect x="15" y="72" width="60" height="4" rx="1" className="fill-zinc-300 dark:fill-zinc-800" />
-        <rect x="15" y="84" width="45" height="4" rx="1" className="fill-zinc-300 dark:fill-zinc-800" />
-        <rect x="15" y="105" width="65" height="5" rx="1" className="fill-zinc-400 dark:fill-zinc-650" />
-        <rect x="15" y="120" width="50" height="4" rx="1" className="fill-zinc-300 dark:fill-zinc-800" />
-        
-        {/* Docs Content */}
-        <rect x="115" y="45" width="100" height="10" rx="2.5" className="fill-zinc-800 dark:fill-zinc-200" />
-        <rect x="115" y="65" width="260" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        <rect x="115" y="75" width="245" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        <rect x="115" y="85" width="200" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        {/* Mock Code block */}
-        <rect x="115" y="105" width="265" height="115" rx="4" className="fill-zinc-950 dark:fill-zinc-970 stroke-zinc-900" />
-        <rect x="130" y="120" width="60" height="5" rx="1" className="fill-teal-500" />
-        <rect x="130" y="132" width="110" height="5" rx="1" className="fill-violet-400" />
-        <rect x="145" y="144" width="80" height="5" rx="1" className="fill-sky-400" />
-        <rect x="145" y="156" width="125" height="5" rx="1" className="fill-amber-400" />
-        <rect x="130" y="168" width="40" height="5" rx="1" className="fill-teal-500" />
-      </svg>
-    );
-  }
-
-  if (type === "blog") {
-    return (
-      <svg className="w-full h-full bg-zinc-50 dark:bg-zinc-950" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Header */}
-        <rect x="20" y="15" width="70" height="8" rx="2" className="fill-zinc-800 dark:fill-zinc-200" />
-        <rect x="310" y="15" width="70" height="8" rx="2" className="fill-zinc-350 dark:fill-zinc-650" />
-        <line x1="20" y1="35" x2="380" y2="35" className="stroke-zinc-200 dark:stroke-zinc-850" strokeWidth="1" />
-        
-        {/* Highlight Main post */}
-        <rect x="20" y="50" width="180" height="110" rx="4" className="fill-zinc-200 dark:fill-zinc-900 stroke-zinc-250 dark:stroke-zinc-800" strokeWidth="1" />
-        <rect x="215" y="55" width="45" height="6" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        <rect x="215" y="68" width="150" height="10" rx="2" className="fill-zinc-850 dark:fill-zinc-200" />
-        <rect x="215" y="82" width="110" height="10" rx="2" className="fill-zinc-850 dark:fill-zinc-200" />
-        <rect x="215" y="100" width="150" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        <rect x="215" y="110" width="150" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        <rect x="215" y="120" width="90" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        
-        {/* Separator */}
-        <line x1="20" y1="180" x2="380" y2="180" className="stroke-zinc-200 dark:stroke-zinc-850" strokeWidth="1" />
-        {/* Lower list */}
-        <rect x="20" y="195" width="100" height="6" rx="1" className="fill-zinc-800 dark:fill-zinc-300" />
-        <rect x="20" y="206" width="60" height="4" rx="1" className="fill-zinc-450 dark:fill-zinc-600" />
-        
-        <rect x="150" y="195" width="100" height="6" rx="1" className="fill-zinc-800 dark:fill-zinc-300" />
-        <rect x="150" y="206" width="60" height="4" rx="1" className="fill-zinc-450 dark:fill-zinc-600" />
-        
-        <rect x="280" y="195" width="100" height="6" rx="1" className="fill-zinc-800 dark:fill-zinc-300" />
-        <rect x="280" y="206" width="60" height="4" rx="1" className="fill-zinc-450 dark:fill-zinc-600" />
-      </svg>
-    );
-  }
-
-  if (type === "portfolio") {
-    return (
-      <svg className="w-full h-full bg-zinc-50 dark:bg-zinc-950" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Intro profile circle */}
-        <circle cx="45" cy="40" r="18" className="fill-zinc-250 dark:fill-zinc-850" />
-        <rect x="75" y="30" width="90" height="8" rx="2" className="fill-zinc-850 dark:fill-zinc-200" />
-        <rect x="75" y="44" width="140" height="5" rx="1.5" className="fill-zinc-400 dark:fill-zinc-600" />
-        
-        {/* Work Grid layout */}
-        <rect x="30" y="75" width="160" height="65" rx="4" className="fill-white dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        <rect x="42" y="112" width="60" height="6" rx="1" className="fill-zinc-800 dark:fill-zinc-300" />
-        <rect x="42" y="123" width="120" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        
-        <rect x="210" y="75" width="160" height="65" rx="4" className="fill-white dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        <rect x="222" y="112" width="60" height="6" rx="1" className="fill-zinc-800 dark:fill-zinc-300" />
-        <rect x="222" y="123" width="120" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-
-        <rect x="30" y="155" width="160" height="65" rx="4" className="fill-white dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        <rect x="42" y="192" width="60" height="6" rx="1" className="fill-zinc-800 dark:fill-zinc-300" />
-        <rect x="42" y="203" width="120" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        
-        <rect x="210" y="155" width="160" height="65" rx="4" className="fill-white dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        <rect x="222" y="192" width="60" height="6" rx="1" className="fill-zinc-800 dark:fill-zinc-300" />
-        <rect x="222" y="203" width="120" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-      </svg>
-    );
-  }
-
-  if (type === "ecommerce") {
-    return (
-      <svg className="w-full h-full bg-zinc-50 dark:bg-zinc-950" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Header navigation bar */}
-        <rect x="0" y="0" width="400" height="30" className="fill-white dark:fill-zinc-950" />
-        <line x1="0" y1="30" x2="400" y2="30" className="stroke-zinc-200 dark:stroke-zinc-850" strokeWidth="1" />
-        <circle cx="20" cy="15" r="5" className="fill-zinc-400 dark:fill-zinc-600" />
-        <circle cx="370" cy="15" r="6" className="fill-zinc-300 dark:fill-zinc-700" />
-        <rect x="345" y="10" width="12" height="10" rx="2" className="fill-zinc-800 dark:fill-zinc-300" />
-        
-        {/* Product Cards */}
-        <rect x="20" y="45" width="80" height="80" rx="4" className="fill-white dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        <rect x="30" y="98" width="45" height="5" rx="1" className="fill-zinc-800 dark:fill-zinc-300" />
-        <rect x="30" y="108" width="25" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        
-        <rect x="115" y="45" width="80" height="80" rx="4" className="fill-white dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        <rect x="125" y="98" width="45" height="5" rx="1" className="fill-zinc-800 dark:fill-zinc-300" />
-        <rect x="125" y="108" width="25" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        
-        <rect x="210" y="45" width="80" height="80" rx="4" className="fill-white dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        <rect x="220" y="98" width="45" height="5" rx="1" className="fill-zinc-800 dark:fill-zinc-300" />
-        <rect x="220" y="108" width="25" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        
-        <rect x="305" y="45" width="80" height="80" rx="4" className="fill-white dark:fill-zinc-900 stroke-zinc-200 dark:stroke-zinc-800" strokeWidth="1" />
-        <rect x="315" y="98" width="45" height="5" rx="1" className="fill-zinc-800 dark:fill-zinc-300" />
-        <rect x="315" y="108" width="25" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-600" />
-        
-        {/* Banner area */}
-        <rect x="20" y="145" width="360" height="75" rx="5" className="fill-zinc-100 dark:fill-zinc-920 stroke-zinc-200 dark:stroke-zinc-850" strokeWidth="1" />
-        <rect x="35" y="160" width="120" height="8" rx="2" className="fill-zinc-800 dark:fill-zinc-200" />
-        <rect x="35" y="174" width="160" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-650" />
-        <rect x="35" y="184" width="100" height="4" rx="1" className="fill-zinc-400 dark:fill-zinc-650" />
-        <rect x="320" y="165" width="40" height="20" rx="3.5" className="fill-zinc-850 dark:fill-zinc-200" />
-      </svg>
-    );
-  }
-
-  return null;
-}
+import TemplateService from "@/services/template.service";
+import { Template } from "@/types/template";
+import TemplateCard from "@/components/common/TemplateCard";
+import SkeletonCard from "@/components/common/SkeletonCard";
+import Button from "@/components/ui/Button";
+import { useAuthStore } from "@/stores/auth.store";
+import { alert } from "@/lib/alert";
+import TemplatePreview from "@/components/creator/templates/TemplatePreview";
+import TemplateInspectorDrawer from "@/components/common/TemplateInspectorDrawer";
+import { useCartStore } from "@/stores/cart.store";
 
 export default function Home() {
-  // Theme state
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const [galleryTemplate, setGalleryTemplate] = useState<Template | null>(null);
+
+  // Inspector
+  const [inspectedTemplate, setInspectedTemplate] =
+    useState<Template | null>(null);
+
+  // User
+  const user = useAuthStore((state) => state.user);
+
+  // Theme
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  // Filter & Search states
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [sortBy, setSortBy] = useState<string>("popular");
+  // Templates
+  const {
+    data: templates = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["templates"],
+    queryFn: () => TemplateService.getAll(),
+    select: (res) => res.data,
+  });
 
-  // Cart simulation state
-  const [cart, setCart] = useState<string[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  // Cart
+  const add = useCartStore((state) => state.add);
+  const openDrawer = useCartStore((state) => state.openDrawer);
 
-  // Inspector modal state
-  const [inspectedTemplate, setInspectedTemplate] = useState<Template | null>(null);
-
-  // Initialize theme from system or localStorage on client
+  // Theme initialize
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initialTheme = savedTheme || (systemPrefersDark ? "dark" : "light");
+    const savedTheme = localStorage.getItem("theme") as
+      | "light"
+      | "dark"
+      | null;
+
+    const systemPrefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    const initialTheme =
+      savedTheme || (systemPrefersDark ? "dark" : "light");
+
     setTheme(initialTheme);
-    document.documentElement.setAttribute("data-theme", initialTheme);
+
+    document.documentElement.setAttribute(
+      "data-theme",
+      initialTheme
+    );
   }, []);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === "light" ? "dark" : "light";
-    setTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
-    document.documentElement.setAttribute("data-theme", nextTheme);
-  };
+  // Add to cart
+  const addToCart = (
+    template: Template,
+    e?: React.MouseEvent
+  ) => {
+    e?.stopPropagation();
 
-  // Filter templates list
-  const filteredTemplates = useMemo(() => {
-    return TEMPLATES.filter((template) => {
-      const matchesCategory =
-        selectedCategory === "All" ||
-        template.category.toLowerCase() === selectedCategory.toLowerCase();
-      const matchesSearch =
-        template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        template.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        template.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-      return matchesCategory && matchesSearch;
-    }).sort((a, b) => {
-      if (sortBy === "popular") return b.rating - a.rating;
-      if (sortBy === "newest") return b.reviews - a.reviews; // mock newest using reviews count
-      if (sortBy === "price-asc") return a.price - b.price;
-      if (sortBy === "price-desc") return b.price - a.price;
-      return 0;
-    });
-  }, [selectedCategory, searchQuery, sortBy]);
-
-  // Cart operations
-  const addToCart = (id: string, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    if (!cart.includes(id)) {
-      setCart([...cart, id]);
-      setIsCartOpen(true);
+    if (!user) {
+      alert.warning("Please log in to add items to your cart.");
+      return;
     }
-  };
 
-  const removeFromCart = (id: string) => {
-    setCart(cart.filter((item) => item !== id));
+    add(template);
+    openDrawer();
   };
-
-  const cartTotal = useMemo(() => {
-    return cart.reduce((total, id) => {
-      const template = TEMPLATES.find((t) => t.id === id);
-      return total + (template ? template.price : 0);
-    }, 0);
-  }, [cart]);
 
   return (
     <div className="">
       {/* 2. HERO SECTION */}
       <section className="relative overflow-hidden bg-base-100 py-16 sm:py-24 border-b border-base-200">
-        
         {/* Subtle grid background pattern */}
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.015] pointer-events-none bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          
           {/* Tagline Badge */}
           <div className="flex justify-center sm:justify-start">
             <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium bg-neutral/5 dark:bg-neutral-content/5 border border-base-300 text-base-content/80">
@@ -479,21 +115,23 @@ export default function Home() {
 
           {/* Call to Actions */}
           <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center sm:justify-start">
-            <a 
-              href="#templates-catalog" 
+            <a
+              href="#templates-catalog"
               className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 text-sm font-semibold bg-neutral text-neutral-content hover:bg-neutral/90 rounded-md transition-all gap-2"
             >
-              Browse Catalog <ArrowRight size={16} />
+              View newest templates <ArrowRight size={16} />
             </a>
-            <button
+            <Button
+              variant="secondary"
               onClick={() => {
-                const docTemplate = TEMPLATES.find(t => t.id === "astrodocs");
-                if (docTemplate) setInspectedTemplate(docTemplate);
+                const latestTemplate = templates[0];
+                if (latestTemplate) setInspectedTemplate(latestTemplate);
               }}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 text-sm font-medium border border-base-300 hover:bg-base-200 rounded-md transition-all gap-2 cursor-pointer"
+              rightIcon={<BookOpen size={16} />}
+              className="w-full sm:w-auto text-sm"
             >
-              Get Free Docs Blueprint <BookOpen size={16} />
-            </button>
+              View latest template
+            </Button>
           </div>
 
           {/* Stats Bar */}
@@ -515,495 +153,73 @@ export default function Home() {
               <p className="text-xs sm:text-sm text-base-content/50 mt-1 font-mono">Free Future Updates</p>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* 3. MAIN CATALOG SECTION */}
+      {/* 3. CÁC TEMPLATE ĐÃ ĐƯỢC TẠO */}
       <main id="templates-catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
-        
-        {/* Sticky Filter & Search Control Panel */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8 border-b border-base-200">
-          
-          {/* Categories Tab Selector */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
-            {CATEGORIES.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                  selectedCategory === category
-                    ? "bg-neutral text-neutral-content"
-                    : "bg-base-200 hover:bg-base-300 text-base-content/70"
-                }`}
-              >
-                {category}
-              </button>
+        {/* 4. TEMPLATES CARD GRID */}
+        {isLoading ? (
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <SkeletonCard key={index} />
             ))}
           </div>
-
-          {/* Search Input & Sort Menu controls */}
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            {/* Mobile/Tablet Search */}
-            <div className="relative flex-grow md:w-64">
-              <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-base-content/40">
-                <Search size={14} />
-              </span>
-              <input
-                type="text"
-                placeholder="Search templates, tags..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full text-xs py-2 pl-8 pr-4 bg-base-200 border-none rounded-md focus:outline-none focus:ring-1 focus:ring-base-content/20 transition-all font-mono"
-              />
-              {searchQuery && (
-                <button 
-                  onClick={() => setSearchQuery("")}
-                  className="absolute inset-y-0 right-3 flex items-center text-base-content/40 hover:text-base-content cursor-pointer"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-
-            {/* Sort Selector Dropdown */}
-            <div className="relative">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="select select-bordered select-sm h-9 text-xs focus:ring-1 focus:ring-base-content/20 focus:outline-none cursor-pointer"
-              >
-                <option value="popular">Popular</option>
-                <option value="newest">Trending</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-              </select>
-            </div>
+        ) : isError ? (
+          <div className="mt-12 text-center py-16 border border-dashed border-rose-300 rounded-lg">
+            <Package size={32} className="mx-auto text-rose-400" />
+            <h3 className="mt-4 text-sm font-semibold text-base-content">Failed to load templates</h3>
+            <p className="mt-1 text-xs text-base-content/50">Please check the API connection and try again.</p>
           </div>
-
-        </div>
-
-        {/* Templates Count Label & Filter Cleansers */}
-        <div className="mt-4 flex items-center justify-between text-xs text-base-content/50 font-mono">
-          <span>Showing {filteredTemplates.length} of {TEMPLATES.length} templates</span>
-          {(selectedCategory !== "All" || searchQuery) && (
-            <button 
-              onClick={() => { setSelectedCategory("All"); setSearchQuery(""); }}
-              className="text-neutral hover:underline cursor-pointer"
-            >
-              Clear filters
-            </button>
-          )}
-        </div>
-
-        {/* 4. TEMPLATES CARD GRID */}
-        {filteredTemplates.length > 0 ? (
+        ) : templates.length > 0 ? (
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredTemplates.map((template) => (
-              <div
+            {templates.map((template) => (
+              <TemplateCard
                 key={template.id}
-                onClick={() => setInspectedTemplate(template)}
-                className="border border-base-200 dark:border-base-300 bg-base-100 hover:border-base-content/45 hover:-translate-y-0.5 active:translate-y-0 duration-200 transition-all rounded-lg overflow-hidden group cursor-pointer flex flex-col justify-between"
-              >
-                
-                {/* Visual Preview Container */}
-                <div className="aspect-video w-full relative overflow-hidden bg-base-200 border-b border-base-200 flex items-center justify-center">
-                  <TemplatePreview type={template.previewType} />
-                  
-                  {/* Subtle hover overlay details */}
-                  <div className="absolute inset-0 bg-base-100/20 backdrop-blur-2xs opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-3">
-                    <span className="bg-neutral text-neutral-content px-3 py-1.5 text-xs font-semibold rounded shadow-md flex items-center gap-1.5">
-                      Inspect Layout <ArrowRight size={12} />
-                    </span>
-                  </div>
-
-                  {/* Rating & reviews badge floating */}
-                  <div className="absolute top-2 right-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-base-100/90 dark:bg-zinc-950/90 border border-base-200 text-[10px] font-semibold text-base-content/80 font-mono shadow-xs">
-                    <Star size={10} className="fill-amber-400 stroke-amber-400" />
-                    <span>{template.rating}</span>
-                  </div>
-
-                  {/* Lighthouse score floating */}
-                  <div className="absolute bottom-2 left-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/90 dark:bg-emerald-600/90 text-[10px] font-bold text-white font-mono shadow-xs">
-                    <span>Perf: {template.lighthouseScore}</span>
-                  </div>
-                </div>
-
-                {/* Template Info Content */}
-                <div className="p-5 flex-grow flex flex-col justify-between">
-                  <div>
-                    {/* Header: title and price */}
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-semibold text-base text-base-content group-hover:text-neutral transition-colors">
-                        {template.title}
-                      </h3>
-                      <span className="font-mono text-sm font-bold text-base-content/90">
-                        {template.price === 0 ? "FREE" : `$${template.price}`}
-                      </span>
-                    </div>
-
-                    {/* Short Description */}
-                    <p className="mt-2 text-xs text-base-content/60 leading-relaxed line-clamp-2">
-                      {template.description}
-                    </p>
-                  </div>
-
-                  {/* Technology Tags & Action block */}
-                  <div className="mt-4 pt-4 border-t border-base-200/60">
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1">
-                      {template.tags.slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-base-200 text-base-content/70 font-mono"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {template.tags.length > 3 && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-base-200 text-base-content/40 font-mono">
-                          +{template.tags.length - 3}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Bottom buttons */}
-                    <div className="mt-4 flex items-center justify-between gap-2">
-                      <span className="text-[10px] text-base-content/40 font-mono">
-                        By {template.author}
-                      </span>
-                      <button
-                        onClick={(e) => addToCart(template.id, e)}
-                        className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-semibold bg-neutral hover:bg-neutral/90 text-neutral-content rounded transition-all cursor-pointer"
-                      >
-                        {template.price === 0 ? "Get" : "Add to Cart"}
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
+                template={template}
+                onInspect={setInspectedTemplate}
+                onAddToCart={(e) => addToCart(template, e)}
+              />
             ))}
           </div>
         ) : (
           <div className="mt-12 text-center py-16 border border-dashed border-base-300 rounded-lg">
             <Package size={32} className="mx-auto text-base-content/30" />
-            <h3 className="mt-4 text-sm font-semibold text-base-content">No templates found</h3>
-            <p className="mt-1 text-xs text-base-content/50">Try checking spelling or clear filter settings to view more items.</p>
-            <button
-              onClick={() => { setSelectedCategory("All"); setSearchQuery(""); }}
-              className="mt-4 inline-flex items-center justify-center px-4 py-2 text-xs font-semibold bg-neutral text-neutral-content rounded-md hover:bg-neutral/90 cursor-pointer"
-            >
-              Reset Filters
-            </button>
+            <h3 className="mt-4 text-sm font-semibold text-base-content">No templates available</h3>
+            <p className="mt-1 text-xs text-base-content/50">Templates will appear here once the API returns data.</p>
           </div>
         )}
       </main>
 
-      {/* 5. VALUE PROPOSITION SECTION */}
-      <section className="bg-base-200/50 py-16 sm:py-24 border-t border-b border-base-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Handcoded architecture. Built for production.
-            </h2>
-            <p className="mt-3 text-sm text-base-content/60 leading-relaxed">
-              We skip the bloat, excess frameworks, and heavy design trends to deliver clean structures that score 100% in Core Web Vitals.
-            </p>
-          </div>
+      <TemplateInspectorDrawer
+        template={inspectedTemplate}
+        onClose={() => setInspectedTemplate(null)}
+        onOpenGallery={(template, initialIndex) => {
+          setGalleryTemplate(template);
+          setGalleryIndex(initialIndex);
+          setGalleryOpen(true);
+        }}
+        onPrimaryAction={(template) => {
+          if (!user) {
+            alert.warning("Please log in to add items to your cart.");
+            return;
+          }
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-base-100 p-6 rounded-lg border border-base-200">
-              <div className="h-10 w-10 bg-neutral text-neutral-content rounded flex items-center justify-center">
-                <Code size={20} />
-              </div>
-              <h3 className="mt-4 font-semibold text-base text-base-content">Clean TypeScript Layouts</h3>
-              <p className="mt-2 text-xs text-base-content/60 leading-relaxed">
-                Strict type safety, minimal dependencies, and clear component splits. Modify files and spin up features instantly.
-              </p>
-            </div>
-            {/* Feature 2 */}
-            <div className="bg-base-100 p-6 rounded-lg border border-base-200">
-              <div className="h-10 w-10 bg-neutral text-neutral-content rounded flex items-center justify-center">
-                <Layers size={20} />
-              </div>
-              <h3 className="mt-4 font-semibold text-base text-base-content">Optimized Tailwind & Daisy</h3>
-              <p className="mt-2 text-xs text-base-content/60 leading-relaxed">
-                Styled with utility classes and pre-mapped semantic components. Zero custom CSS hacks or bundle size overhead.
-              </p>
-            </div>
-            {/* Feature 3 */}
-            <div className="bg-base-100 p-6 rounded-lg border border-base-200">
-              <div className="h-10 w-10 bg-neutral text-neutral-content rounded flex items-center justify-center">
-                <CheckCircle2 size={20} />
-              </div>
-              <h3 className="mt-4 font-semibold text-base text-base-content">Lifetime Free Updates</h3>
-              <p className="mt-2 text-xs text-base-content/60 leading-relaxed">
-                Purchase once and get all ongoing repairs, React version upgrades, and new layouts absolutely free.
-              </p>
-            </div>
-          </div>
+          add(template);
+          setInspectedTemplate(null);
+          openDrawer();
+        }}
+      />
 
-        </div>
-      </section>
-
-      {/* 6. CALL TO ACTION / NEWSLETTER */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-        <div className="bg-neutral text-neutral-content rounded-xl p-8 sm:p-12 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-8">
-          
-          {/* Accent graphic grid line */}
-          <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:2rem_2rem]"></div>
-          
-          <div className="max-w-lg relative">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              Get new blueprints directly to your inbox.
-            </h2>
-            <p className="mt-3 text-xs sm:text-sm text-neutral-content/75 leading-relaxed">
-              We periodically release free, premium code structures and open-source layout templates. Subscribe to get immediate notifications.
-            </p>
-          </div>
-
-          <div className="w-full md:max-w-sm relative flex flex-col sm:flex-row gap-2">
-            <input
-              type="email"
-              placeholder="name@company.com"
-              className="input input-bordered bg-white/10 border-white/20 text-white placeholder-white/40 focus:ring-1 focus:ring-white/30 focus:outline-none w-full text-xs rounded-md"
-              required
-            />
-            <button className="btn btn-neutral bg-white text-black hover:bg-white/90 border-none text-xs font-semibold px-5 rounded-md py-3 shrink-0 cursor-pointer">
-              Subscribe Free
-            </button>
-          </div>
-
-        </div>
-      </section>
-
-
-      {/* 8. SLIDE-OVER DRAWER TEMPLATE INSPECTOR */}
-      {inspectedTemplate && (
-        <div 
-          className="fixed inset-0 z-50 flex justify-end bg-black/35 backdrop-blur-xs transition-opacity duration-300"
-          onClick={() => setInspectedTemplate(null)}
-        >
-          {/* Drawer container panel */}
-          <div 
-            className="w-full max-w-lg h-full bg-base-100 border-l border-base-200 p-6 flex flex-col justify-between overflow-y-auto relative animate-in slide-in-from-right duration-250"
-            onClick={(e) => e.stopPropagation()}
-          >
-            
-            {/* Header section inside panel */}
-            <div>
-              {/* Close Button */}
-              <button 
-                onClick={() => setInspectedTemplate(null)}
-                className="absolute top-4 right-4 btn btn-ghost btn-circle btn-sm text-base-content/50 hover:text-base-content cursor-pointer"
-                aria-label="Close Inspector"
-              >
-                <X size={18} />
-              </button>
-
-              {/* Category label */}
-              <span className="font-mono text-[10px] uppercase font-bold text-neutral">
-                {inspectedTemplate.category}
-              </span>
-
-              {/* Title */}
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-base-content pr-8">
-                {inspectedTemplate.title}
-              </h2>
-
-              {/* Author and reviews stats */}
-              <div className="mt-2 flex items-center gap-3 text-xs text-base-content/50 font-mono">
-                <span>By {inspectedTemplate.author}</span>
-                <span>•</span>
-                <span className="flex items-center gap-0.5">
-                  <Star size={11} className="fill-amber-400 stroke-amber-400" />
-                  <span className="text-base-content font-bold">{inspectedTemplate.rating}</span> 
-                  ({inspectedTemplate.reviews} reviews)
-                </span>
-              </div>
-
-              {/* Tech stack badges */}
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {inspectedTemplate.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-base-200 text-base-content/80"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Preview wireframe in drawer */}
-              <div className="mt-6 aspect-video w-full bg-base-200 border border-base-200 rounded-lg overflow-hidden flex items-center justify-center relative">
-                <TemplatePreview type={inspectedTemplate.previewType} />
-                <span className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 text-white font-mono text-[9px] rounded uppercase font-semibold">
-                  Interactive mockup
-                </span>
-              </div>
-
-              {/* Description */}
-              <div className="mt-6">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-base-content/55 font-mono">About Template</h4>
-                <p className="mt-2 text-xs leading-relaxed text-base-content/75">
-                  {inspectedTemplate.description}
-                </p>
-              </div>
-
-              {/* Technical Specifications */}
-              <div className="mt-6 grid grid-cols-3 gap-4 border-t border-b border-base-200 py-4 font-mono text-center">
-                <div>
-                  <span className="block text-[10px] text-base-content/40">PAGES</span>
-                  <span className="text-sm font-bold text-base-content">{inspectedTemplate.pages} template layouts</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-base-content/40">LIGHTHOUSE</span>
-                  <span className="text-sm font-bold text-emerald-500">{inspectedTemplate.lighthouseScore}/100</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-base-content/40">SUPPORT</span>
-                  <span className="text-sm font-bold text-base-content">Lifetime</span>
-                </div>
-              </div>
-
-              {/* Features list */}
-              <div className="mt-6">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-base-content/55 font-mono mb-3">Key Features included</h4>
-                <ul className="space-y-2">
-                  {inspectedTemplate.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-base-content/85">
-                      <Check size={14} className="text-emerald-500 shrink-0 mt-0.5" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-            </div>
-
-            {/* Sticky/Fixed bottom drawer options */}
-            <div className="mt-8 pt-4 border-t border-base-200 bg-base-100 flex items-center justify-between gap-4">
-              <div>
-                <span className="block text-[10px] font-mono text-base-content/40">TOTAL LICENSE PRICE</span>
-                <span className="text-xl font-mono font-extrabold text-base-content">
-                  {inspectedTemplate.price === 0 ? "FREE" : `$${inspectedTemplate.price}`}
-                </span>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => addToCart(inspectedTemplate.id)}
-                  className="btn btn-neutral text-xs font-semibold px-4 cursor-pointer"
-                >
-                  {inspectedTemplate.price === 0 ? "Download Layout" : "Add to Cart"}
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* 9. SHOPPING CART DRAWER OVERLAY */}
-      {isCartOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex justify-end bg-black/35 backdrop-blur-xs transition-opacity duration-300"
-          onClick={() => setIsCartOpen(false)}
-        >
-          <div 
-            className="w-full max-w-sm h-full bg-base-100 border-l border-base-200 p-6 flex flex-col justify-between overflow-y-auto relative animate-in slide-in-from-right duration-200"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Cart Header */}
-            <div>
-              <button 
-                onClick={() => setIsCartOpen(false)}
-                className="absolute top-4 right-4 btn btn-ghost btn-circle btn-sm text-base-content/50 hover:text-base-content cursor-pointer"
-                aria-label="Close Cart"
-              >
-                <X size={18} />
-              </button>
-
-              <h2 className="text-lg font-bold tracking-tight text-base-content flex items-center gap-2">
-                <ShoppingCart size={18} /> Your Cart
-              </h2>
-              <p className="text-xs text-base-content/50 mt-1 font-mono">{cart.length} items selected</p>
-
-              {/* Items List */}
-              <div className="mt-8 space-y-4">
-                {cart.length > 0 ? (
-                  cart.map((itemId) => {
-                    const item = TEMPLATES.find((t) => t.id === itemId);
-                    if (!item) return null;
-                    return (
-                      <div key={item.id} className="flex items-start justify-between gap-3 p-3 bg-base-200/50 border border-base-200 rounded-md">
-                        <div className="flex items-start gap-2.5">
-                          {/* Mini icon placeholder based on category */}
-                          <div className="h-8 w-8 bg-neutral/5 rounded flex items-center justify-center shrink-0 text-base-content/60">
-                            {item.previewType === "docs" ? <BookOpen size={14} /> : item.previewType === "dashboard" ? <Monitor size={14} /> : <Layers size={14} />}
-                          </div>
-                          <div>
-                            <h4 className="text-xs font-semibold text-base-content leading-none">{item.title}</h4>
-                            <span className="text-[10px] text-base-content/40 font-mono mt-1 block uppercase">{item.category}</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-1.5 font-mono">
-                          <span className="text-xs font-bold text-base-content">{item.price === 0 ? "FREE" : `$${item.price}`}</span>
-                          <button 
-                            onClick={() => removeFromCart(item.id)}
-                            className="text-[10px] text-rose-500 hover:underline cursor-pointer"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="text-center py-12 text-base-content/40">
-                    <ShoppingCart size={24} className="mx-auto mb-2 opacity-50" />
-                    <p className="text-xs">Your cart is empty.</p>
-                    <button 
-                      onClick={() => setIsCartOpen(false)}
-                      className="mt-4 text-xs font-semibold text-neutral hover:underline cursor-pointer"
-                    >
-                      Browse templates
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Cart Footer / Checkout action */}
-            {cart.length > 0 && (
-              <div className="mt-8 pt-4 border-t border-base-200">
-                <div className="flex items-center justify-between font-mono mb-4 text-xs">
-                  <span className="text-base-content/50">SUBTOTAL:</span>
-                  <span className="text-base font-bold text-base-content">${cartTotal}</span>
-                </div>
-                <button
-                  onClick={() => {
-                    alert("Checkout simulation successful! Thank you for purchasing from DevCraft Templates.");
-                    setCart([]);
-                    setIsCartOpen(false);
-                  }}
-                  className="w-full btn btn-neutral text-xs font-semibold py-3 rounded-md cursor-pointer"
-                >
-                  Checkout and Download
-                </button>
-                <span className="block text-center text-[10px] text-base-content/40 mt-3 font-mono">
-                  Safe checkout. 100% money back guarantee.
-                </span>
-              </div>
-            )}
-
-          </div>
-        </div>
-      )}
-
+      <TemplatePreview
+        open={galleryOpen}
+        template={galleryTemplate}
+        initialIndex={galleryIndex}
+        onClose={() => {
+          setGalleryOpen(false);
+          setGalleryTemplate(null);
+        }}
+      />
     </div>
   );
 }

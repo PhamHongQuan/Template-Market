@@ -10,7 +10,7 @@ export default function Price({
     value,
     currency = "VND",
     locale = "vi-VN",
-    freeText = "Miễn phí",
+    freeText = "Free",
     className,
 }: PriceProps) {
     const amount = Number(value);

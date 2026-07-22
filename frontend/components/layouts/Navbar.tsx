@@ -7,17 +7,25 @@ import {
   Sun,
   Moon,
   Palette,
-  LogOut
+  LogOut,
+  ShoppingCart
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/dist/client/components/navigation";
 import { useAuthStore } from "@/stores/auth.store";
+import { useCartStore } from "@/stores/cart.store";
+
 
 export default function Navbar() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
+
+
+  const items = useCartStore((state) => state.items);
+  const openDrawer = useCartStore((state) => state.openDrawer);
+
 
   const toggleTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
@@ -67,6 +75,22 @@ export default function Navbar() {
 
           {/* Auth Links */}
           <div className="hidden sm:flex items-center gap-2">
+            {user && (
+              <button
+                onClick={openDrawer}
+                className="btn btn-ghost btn-circle relative"
+                aria-label="Shopping cart"
+              >
+                <ShoppingCart size={18} />
+
+                {items.length > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-5 h-5 rounded-full bg-neutral text-neutral-content text-[10px] flex items-center justify-center px-1 font-bold">
+                    {items.length}
+                  </span>
+                )}
+              </button>
+            )}
+
             {user ? (
               <div className="relative group">
                 {/* Trigger */}

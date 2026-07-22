@@ -50,13 +50,16 @@ class TemplateRepository implements TemplateRepositoryInterface
         return Template::query()
             ->with([
                 'category',
+                'thumbnail',
+                'source',
+                'previews',
                 'assets',
             ])
             ->where('slug', $slug)
             ->first();
     }
 
-        public function paginate(
+    public function paginate(
             int $perPage = 15,
             array $filters = []
         ): LengthAwarePaginator {
@@ -64,13 +67,15 @@ class TemplateRepository implements TemplateRepositoryInterface
         $query = Template::query()
             ->with([
                 'category',
+                'thumbnail',
+                'previews',
                 'assets',
             ]);
 
         if (!empty($filters['keyword'])) {
             $query->where(function ($q) use ($filters) {
                 $q->where('title', 'like', "%{$filters['keyword']}%")
-                  ->orWhere('description', 'like', "%{$filters['keyword']}%");
+                ->orWhere('description', 'like', "%{$filters['keyword']}%");
             });
         }
 

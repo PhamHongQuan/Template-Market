@@ -110,10 +110,11 @@ export default function SubmitSection() {
             </Link>
 
             <Button
-                disabled={loading}
                 onClick={handleSubmit}
+                loading={loading}
+                disabled={loading}
             >
-                <Loading/> Submit
+                Submit
             </Button>
         </div>
     );
