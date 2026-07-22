@@ -74,4 +74,20 @@ class Template extends Model
     {
         return $this->hasMany(CartItem::class);
     }
+
+    /**
+     * Get order items.
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Get template owners.
+     */
+    public function ownedTemplates()
+    {
+        return $this->hasMany(OwnedTemplate::class);
+    }
 }

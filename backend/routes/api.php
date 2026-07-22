@@ -3,6 +3,7 @@
 use App\Http\Controllers\api\Account\AccountController;
 use App\Http\Controllers\api\Auth\AuthController;
 use App\Http\Controllers\api\Category\CategoryController;
+use App\Http\Controllers\api\Order\OrderController;
 use App\Http\Controllers\api\Template\TemplateController;
 use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
@@ -83,4 +84,24 @@ Route::prefix('cart')
         Route::delete('/items/{templateId}', 'destroy');
 
         Route::delete('/items', 'clear');
+    });
+
+
+// Order Routes
+Route::prefix('orders')
+    ->middleware('jwt')
+    ->controller(OrderController::class)
+    ->group(function () {
+
+        // Checkout cart
+        Route::post('/checkout', 'checkout');
+
+        // Get current user's orders
+        Route::get('/', 'index');
+
+        // Get order detail
+        Route::get('/{id}', 'show');
+
+        // Cancel order
+        Route::post('/{id}/cancel', 'cancel');
     });
