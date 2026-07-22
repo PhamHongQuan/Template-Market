@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
+use App\Enums\UserStatus;
+use App\Models\Cart;
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Notifications\ResetPasswordNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
-use App\Enums\UserRole;
-use App\Enums\UserStatus;
 use Illuminate\Support\Facades\Storage;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 #[Fillable([
     'name',
@@ -68,5 +69,10 @@ class User extends Authenticatable implements JWTSubject
             $this->avatar,
             now()->addDays(7),
         );
+    }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
     }
 }

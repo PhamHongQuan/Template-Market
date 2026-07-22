@@ -1,10 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\Auth\AuthController;
 use App\Http\Controllers\api\Account\AccountController;
+use App\Http\Controllers\api\Auth\AuthController;
 use App\Http\Controllers\api\Category\CategoryController;
 use App\Http\Controllers\api\Template\TemplateController;
+use App\Http\Controllers\CartController;
+use Illuminate\Support\Facades\Route;
 
 // Authentication Routes
 Route::prefix('auth')->group(function () {
@@ -67,3 +68,19 @@ Route::prefix('templates')->group(function () {
 
     Route::get('/{id}', [TemplateController::class, 'show']);
 });
+
+
+// Cart Routes
+Route::prefix('cart')
+    ->middleware('jwt')
+    ->controller(CartController::class)
+    ->group(function () {
+
+        Route::get('/', 'index');
+
+        Route::post('/items', 'store');
+
+        Route::delete('/items/{templateId}', 'destroy');
+
+        Route::delete('/items', 'clear');
+    });

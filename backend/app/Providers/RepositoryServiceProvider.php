@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Repositories\CartItemRepository;
+use App\Repositories\CartRepository;
 use App\Repositories\CategoryRepository;
+use App\Repositories\Interfaces\CartItemRepositoryInterface;
+use App\Repositories\Interfaces\CartRepositoryInterface;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Repositories\Interfaces\TemplateAssetRepositoryInterface;
 use App\Repositories\Interfaces\TemplateRepositoryInterface;
@@ -37,6 +41,16 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             TemplateAssetRepositoryInterface::class,
             TemplateAssetRepository::class
+        );
+
+        $this->app->bind(
+            CartRepositoryInterface::class,
+            CartRepository::class
+        );
+
+        $this->app->bind(
+            CartItemRepositoryInterface::class,
+            CartItemRepository::class
         );
     }
 

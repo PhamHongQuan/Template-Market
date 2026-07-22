@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\TemplateAssetType;
 use App\Enums\TemplateStatus;
+use App\Models\CartItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -67,5 +68,10 @@ class Template extends Model
         return $this->hasMany(TemplateAsset::class)
             ->where('asset_type', TemplateAssetType::PREVIEW)
             ->orderBy('sort_order');
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
     }
 }
