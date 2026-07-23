@@ -22,10 +22,8 @@ export default function Navbar() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
 
-
-  const items = useCartStore((state) => state.items);
+  const cart = useCartStore((state) => state.cart);
   const openDrawer = useCartStore((state) => state.openDrawer);
-
 
   const toggleTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
@@ -83,9 +81,9 @@ export default function Navbar() {
               >
                 <ShoppingCart size={18} />
 
-                {items.length > 0 && (
+                {(cart?.items.length ?? 0) > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-5 h-5 rounded-full bg-neutral text-neutral-content text-[10px] flex items-center justify-center px-1 font-bold">
-                    {items.length}
+                    {cart!.items.length}
                   </span>
                 )}
               </button>

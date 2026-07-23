@@ -5,7 +5,7 @@ use App\Http\Controllers\api\Auth\AuthController;
 use App\Http\Controllers\api\Category\CategoryController;
 use App\Http\Controllers\api\Order\OrderController;
 use App\Http\Controllers\api\Template\TemplateController;
-use App\Http\Controllers\CartController;
+use App\Http\Controllers\api\Cart\CartController;
 use Illuminate\Support\Facades\Route;
 
 // Authentication Routes

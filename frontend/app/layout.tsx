@@ -3,10 +3,12 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 
+import Providers from "./providers";
+
 import Navbar from "@/components/layouts/Navbar";
 import Footer from "@/components/layouts/Footer";
-import Providers from "./providers";
 import CartDrawerContainer from "@/components/common/CartDrawerContainer";
+import AppInitializer from "@/components/common/AppInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,13 +36,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-base-100 text-base-content flex flex-col font-sans transition-colors duration-200`}
       >
         <Providers>
-          <Navbar />
+          <AppInitializer>
+            <Navbar />
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 w-full">
-            <main>{children}</main>
-          </div>
-          <CartDrawerContainer />
-          <Footer />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 w-full">
+              <main>{children}</main>
+            </div>
+
+            <CartDrawerContainer />
+            <Footer />
+          </AppInitializer>
         </Providers>
       </body>
     </html>

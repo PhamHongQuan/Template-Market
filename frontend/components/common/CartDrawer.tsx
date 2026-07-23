@@ -1,18 +1,22 @@
 "use client";
 
-import { Folder, ShoppingCart, X } from "lucide-react";
+import Image from "next/image";
+import { ShoppingCart, Trash2, X } from "lucide-react";
 
 import Price from "@/components/common/Price";
-import { Template } from "@/types/template";
+import { CartItem } from "@/types/cart";
 
 interface CartDrawerProps {
-    open: boolean;
-    items: Template[];
+    items: CartItem[];
     total: number;
+
+    open: boolean;
     onClose: () => void;
-    onRemoveItem: (templateId: number) => void;
-    onCheckout: () => void;
+
+    onRemoveItem: (id: number) => void | Promise<void>;
+
     onBrowseTemplates: () => void;
+    onCheckout: () => void | Promise<void>;
 }
 
 export default function CartDrawer({
@@ -44,32 +48,63 @@ export default function CartDrawer({
                         <X size={18} />
                     </button>
 
-                    <h2 className="text-lg font-bold tracking-tight text-base-content flex items-center gap-2">
-                        <ShoppingCart size={18} /> Your Cart
+                    <h2 className="flex items-center gap-2 text-xl font-bold">
+                        <ShoppingCart size={20} />
+                        Your Cart
                     </h2>
-                    <p className="text-xs text-base-content/50 mt-1 font-mono">{items.length} items selected</p>
+
+                    <p className="mt-1 text-sm text-base-content/60">
+                        {items.length} template{items.length !== 1 ? "s" : ""}
+                    </p>
 
                     <div className="mt-8 space-y-4">
                         {items.length > 0 ? (
                             items.map((item) => (
-                                <div key={item.id} className="flex items-start justify-between gap-3 p-3 bg-base-200/50 border border-base-200 rounded-md">
-                                    <div className="flex items-start gap-2.5">
-                                        <div className="h-8 w-8 bg-neutral/5 rounded flex items-center justify-center shrink-0 text-base-content/60">
-                                            <Folder size={14} />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-xs font-semibold text-base-content leading-none">{item.title}</h4>
-                                            <span className="text-[10px] text-base-content/40 font-mono mt-1 block uppercase">{item.category.name}</span>
-                                        </div>
+                                <div
+                                    key={item.id}
+                                    className="flex gap-3 rounded-xl border border-base-200 bg-base-100 p-3 transition-all hover:border-neutral/30 hover:shadow-sm"
+                                >
+                                    <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-base-200 bg-base-200">
+                                        {item.template.thumbnail ? (
+                                            <Image
+                                                src={`${process.env.NEXT_PUBLIC_STORAGE_URL}/${item.template.thumbnail}`}
+                                                alt={item.template.title}
+                                                fill
+                                                sizes="96px"
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex h-full w-full items-center justify-center text-base-content/30">
+                                                <ShoppingCart size={18} />
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="flex flex-col items-end gap-1.5 font-mono">
-                                        <Price value={item.price} className="text-xs font-bold text-base-content" />
-                                        <button
-                                            onClick={() => onRemoveItem(item.id)}
-                                            className="text-[10px] text-rose-500 hover:underline cursor-pointer"
-                                        >
-                                            Remove
-                                        </button>
+
+                                    <div className="flex min-w-0 flex-1 flex-col justify-between">
+                                        <div>
+                                            <h4 className="truncate text-sm font-semibold text-base-content">
+                                                {item.template.title}
+                                            </h4>
+
+                                            <p className="mt-1 text-xs text-base-content/50">
+                                                {item.template.category.name}
+                                            </p>
+                                        </div>
+
+                                        <div className="mt-3 flex items-center justify-between">
+                                            <Price
+                                                value={item.price}
+                                                className="text-sm font-bold text-primary"
+                                            />
+
+                                            <button
+                                                onClick={() => onRemoveItem(item.template.id)}
+                                                className="btn btn-ghost btn-xs text-error hover:bg-error/10"
+                                                aria-label="Remove template"
+                                            >
+                                                <Trash2 size={15} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))
@@ -89,20 +124,28 @@ export default function CartDrawer({
                 </div>
 
                 {items.length > 0 && (
-                    <div className="mt-8 pt-4 border-t border-base-200">
-                        <div className="flex items-center justify-between font-mono mb-4 text-xs">
-                            <span className="text-base-content/50">SUBTOTAL:</span>
-                            <Price value={total} className="text-base font-bold text-base-content" />
+                    <div className="mt-8 border-t border-base-200 pt-5">
+                        <div className="mb-5 flex items-center justify-between">
+                            <span className="text-sm text-base-content/60">
+                                Total
+                            </span>
+
+                            <Price
+                                value={total}
+                                className="text-xl font-bold"
+                            />
                         </div>
+
                         <button
                             onClick={onCheckout}
-                            className="w-full btn btn-neutral text-xs font-semibold py-3 rounded-md cursor-pointer"
+                            className="btn btn-neutral w-full"
                         >
-                            Checkout and Download
+                            Checkout
                         </button>
-                        <span className="block text-center text-[10px] text-base-content/40 mt-3 font-mono">
-                            Safe checkout. 100% money back guarantee.
-                        </span>
+
+                        <p className="mt-3 text-center text-xs text-base-content/40">
+                            Instant download after successful payment.
+                        </p>
                     </div>
                 )}
             </div>

@@ -47,8 +47,8 @@ export default function Home() {
   });
 
   // Cart
-  const add = useCartStore((state) => state.add);
   const openDrawer = useCartStore((state) => state.openDrawer);
+  const add = useCartStore((s) => s.add);
 
   // Theme initialize
   useEffect(() => {
@@ -73,19 +73,20 @@ export default function Home() {
   }, []);
 
   // Add to cart
-  const addToCart = (
-    template: Template,
-    e?: React.MouseEvent
-  ) => {
+  const addToCart = async (template: Template, e?: React.MouseEvent) => {
     e?.stopPropagation();
 
     if (!user) {
-      alert.warning("Please log in to add items to your cart.");
+      alert.warning("Please log in.");
       return;
     }
 
-    add(template);
-    openDrawer();
+    try {
+      await add(template.id);
+      alert.success("Added to cart.");
+    } catch {
+      alert.error("Failed to add to cart.");
+    }
   };
 
   return (
@@ -199,15 +200,14 @@ export default function Home() {
           setGalleryIndex(initialIndex);
           setGalleryOpen(true);
         }}
-        onPrimaryAction={(template) => {
+        onPrimaryAction={async (template) => {
           if (!user) {
-            alert.warning("Please log in to add items to your cart.");
+            alert.warning("Please log in.");
             return;
           }
 
-          add(template);
+          await add(template.id);
           setInspectedTemplate(null);
-          openDrawer();
         }}
       />
 

@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api\Cart;
 
 use App\Helpers\ApiResponse;
-use App\Services\CartService;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Throwable;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Cart\AddToCartRequest;
 use App\Http\Resources\CartResource;
+use App\Services\CartService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Throwable;
+
 
 class CartController extends Controller
 {

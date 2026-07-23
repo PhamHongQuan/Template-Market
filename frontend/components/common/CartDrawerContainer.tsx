@@ -5,31 +5,28 @@ import { useCartStore } from "@/stores/cart.store";
 import { alert } from "@/lib/alert";
 
 export default function CartDrawerContainer() {
-    const items = useCartStore((s) => s.items);
-    const remove = useCartStore((s) => s.remove);
-    const clear = useCartStore((s) => s.clear);
+  const cart = useCartStore((s) => s.cart);
 
-    const isOpen = useCartStore((s) => s.isOpen);
-    const closeDrawer = useCartStore((s) => s.closeDrawer);
+  const remove = useCartStore((s) => s.remove);
+  const clear = useCartStore((s) => s.clear);
 
-    const total = items.reduce(
-        (sum, item) => sum + Number(item.price),
-        0
-    );
+  const isOpen = useCartStore((s) => s.drawerOpen);
+  const closeDrawer = useCartStore((s) => s.closeDrawer);
 
-    return (
-        <CartDrawer
-            open={isOpen}
-            items={items}
-            total={total}
-            onClose={closeDrawer}
-            onRemoveItem={remove}
-            onBrowseTemplates={closeDrawer}
-            onCheckout={() => {
-                alert.confirm("Checkout successful!");
-                clear();
-                closeDrawer();
-            }}
-        />
-    );
+  return (
+    <CartDrawer
+      open={isOpen}
+      items={cart?.items ?? []}
+      total={cart?.total ?? 0}
+      onClose={closeDrawer}
+      onRemoveItem={remove}
+      onBrowseTemplates={closeDrawer}
+      onCheckout={async () => {
+        alert.confirm("Checkout successful!");
+
+        await clear();
+        closeDrawer();
+      }}
+    />
+  );
 }
