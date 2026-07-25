@@ -24,6 +24,7 @@ export default function Home() {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [galleryTemplate, setGalleryTemplate] = useState<Template | null>(null);
+  const [addingToCart, setAddingToCart] = useState(false);
 
   // Inspector
   const [inspectedTemplate, setInspectedTemplate] =
@@ -194,6 +195,7 @@ export default function Home() {
 
       <TemplateInspectorDrawer
         template={inspectedTemplate}
+        loading={addingToCart}
         onClose={() => setInspectedTemplate(null)}
         onOpenGallery={(template, initialIndex) => {
           setGalleryTemplate(template);
@@ -206,8 +208,20 @@ export default function Home() {
             return;
           }
 
-          await add(template.id);
-          setInspectedTemplate(null);
+          try {
+            setAddingToCart(true);
+            await add(template.id);
+            alert.success("Added to cart.");
+            setInspectedTemplate(null);
+          } catch (error) {
+            const message =
+              (error as { message?: string })?.message ??
+              "Failed to add to cart.";
+
+            alert.error(message);
+          } finally {
+            setAddingToCart(false);
+          }
         }}
       />
 

@@ -5,11 +5,12 @@ import { ShoppingCart, Trash2, X } from "lucide-react";
 
 import Price from "@/components/common/Price";
 import { CartItem } from "@/types/cart";
+import Loading from "../ui/Loading";
 
 interface CartDrawerProps {
     items: CartItem[];
     total: number;
-
+    removingId?: number | null;
     open: boolean;
     onClose: () => void;
 
@@ -22,6 +23,7 @@ interface CartDrawerProps {
 export default function CartDrawer({
     open,
     items,
+    removingId = null,
     total,
     onClose,
     onRemoveItem,
@@ -99,10 +101,15 @@ export default function CartDrawer({
 
                                             <button
                                                 onClick={() => onRemoveItem(item.template.id)}
+                                                disabled={removingId === item.template.id}
                                                 className="btn btn-ghost btn-xs text-error hover:bg-error/10"
                                                 aria-label="Remove template"
                                             >
-                                                <Trash2 size={15} />
+                                                {removingId === item.template.id ? (
+                                                    <Loading type="bars" size="xs" />
+                                                ) : (
+                                                    <Trash2 size={15} />
+                                                )}
                                             </button>
                                         </div>
                                     </div>

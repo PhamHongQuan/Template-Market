@@ -5,10 +5,12 @@ import { Download, Eye, Folder, ImageIcon, Package, X } from "lucide-react";
 
 import Price from "@/components/common/Price";
 import { Template } from "@/types/template";
+import Loading from "../ui/Loading";
 
 interface TemplateInspectorDrawerProps {
   template: Template | null;
   onClose: () => void;
+  loading?: boolean;
   onOpenGallery: (template: Template, initialIndex: number) => void;
   onPrimaryAction: (template: Template) => void;
 }
@@ -16,6 +18,7 @@ interface TemplateInspectorDrawerProps {
 export default function TemplateInspectorDrawer({
   template,
   onClose,
+  loading = false,
   onOpenGallery,
   onPrimaryAction,
 }: TemplateInspectorDrawerProps) {
@@ -174,9 +177,16 @@ export default function TemplateInspectorDrawer({
           <div className="flex gap-2">
             <button
               onClick={() => onPrimaryAction(template)}
+              disabled={loading}
               className="btn btn-neutral text-xs font-semibold py-3 rounded-md cursor-pointer"
             >
-              {Number(template.price) === 0 ? "Download Layout" : "Add to Cart"}
+              {loading ? (
+                <Loading type="bars" size="sm" />
+              ) : Number(template.price) === 0 ? (
+                "Download Layout"
+              ) : (
+                "Add to Cart"
+              )}
             </button>
           </div>
         </div>

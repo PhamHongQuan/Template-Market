@@ -20,8 +20,14 @@ class TemplateService {
     return res.data;
   }
 
-  async getAll() {
-    const res = await api.get<ApiResponse<Template[]>>("/templates");
+  async getAll(params?: {
+    keyword?: string;
+    category_id?: number | string;
+    status?: string;
+    page?: number;
+    per_page?: number;
+  }) {
+    const res = await api.get<ApiResponse<Template[]>>("/templates", { params });
 
     return res.data;
   }

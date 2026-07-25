@@ -55,9 +55,9 @@ export const useCartStore = create<CartState>()(
             drawerOpen: true,
             loading: false,
           });
-        } catch {
+        } catch (error) {
           set({ loading: false });
-          throw new Error("Add cart failed");
+          throw error;
         }
       },
 
@@ -96,6 +96,6 @@ export const useCartStore = create<CartState>()(
       partialize: (state) => ({
         cart: state.cart,
       }),
-    }
-  )
+    },
+  ),
 );
